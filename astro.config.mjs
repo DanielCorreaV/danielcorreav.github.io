@@ -1,5 +1,12 @@
-// @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
-// https://astro.build/config
-export default defineConfig({});
+export default defineConfig({
+  site: "https://tu-dominio.com", // cámbialo cuando tengas el dominio
+  i18n: {
+    defaultLocale: "es",
+    locales: ["es", "en"],
+    routing: {
+      prefixDefaultLocale: false, // /proyectos (es), /en/proyectos (en)
+    },
+  },
+});

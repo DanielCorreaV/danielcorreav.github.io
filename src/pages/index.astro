@@ -1,17 +1,52 @@
 ---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
 
+// Proyectos destacados (mover a content collection más adelante si quieres)
+const featuredProjects = [
+  { title: 'Proyecto Uno', description: 'Breve descripción del proyecto.', href: '/proyectos#proyecto-uno' },
+  { title: 'Proyecto Dos', description: 'Breve descripción del proyecto.', href: '/proyectos#proyecto-dos' },
+  { title: 'Proyecto Tres', description: 'Breve descripción del proyecto.', href: '/proyectos#proyecto-tres' },
+];
+
+// Últimos posts del blog
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const latestPosts = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 ---
+<BaseLayout title="Tu Nombre — Portafolio" description="Desarrollador de software, proyectos y notas.">
+  <section class="hero">
+    <h1>Hola, soy Tu Nombre</h1>
+    <p>Desarrollador de software. Construyo cosas para la web y escribo sobre lo que aprendo.</p>
+    <a href="/proyectos" class="btn">Ver proyectos</a>
+  </section>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+  <section class="section">
+    <h2>Proyectos destacados</h2>
+    <div class="grid">
+      {featuredProjects.map(p => (
+        <a class="card" href={p.href}>
+          <h3>{p.title}</h3>
+          <p>{p.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Últimos posts</h2>
+    <div class="grid">
+      {latestPosts.map(post => (
+        <a class="card" href={`/blog/${post.id}`}>
+          <h3>{post.data.title}</h3>
+          <p>{post.data.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+	@import './index.scss';
+</style>

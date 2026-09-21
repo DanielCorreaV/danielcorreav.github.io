@@ -12,10 +12,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.3.3",
-    "sass": "^1.104.1"
+    "astro": "^7.3.3"
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "sass": "^1.104.1"
   }
 }
