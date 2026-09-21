@@ -1,0 +1,101 @@
+---
+interface Props {
+  index: number;
+  title: string;
+  tagline: string;
+  tag: string;
+  accent: string;
+  href: string;
+}
+const { index, title, tagline, tag, accent, href } = Astro.props;
+const num = String(index).padStart(2, '0');
+---
+<a class="project-card" href={href} style={`--accent: ${accent};`}>
+  <div class="glow"></div>
+  <span class="index">{num}</span>
+  <span class="tag">{tag}</span>
+  <div class="footer">
+    <h3>{title}</h3>
+    <p>{tagline}</p>
+    <span class="link">Ver proyecto →</span>
+  </div>
+</a>
+
+<style lang="scss">
+  .project-card {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: #050506;
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    color: #fff;
+    isolation: isolate;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      .glow { opacity: 0.85; transform: scale(1.1); }
+      .link { opacity: 1; transform: translateX(0); }
+    }
+  }
+
+  .glow {
+    position: absolute;
+    inset: -30%;
+    background:
+      radial-gradient(circle at 30% 25%, var(--accent) 0%, transparent 45%),
+      radial-gradient(circle at 75% 70%, var(--accent) 0%, transparent 40%);
+    filter: blur(50px);
+    opacity: 0.55;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 0;
+  }
+
+  .index {
+    position: absolute;
+    top: 1rem;
+    right: 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    z-index: 1;
+  }
+
+  .tag {
+    position: absolute;
+    top: 1rem;
+    left: 1.1rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.6);
+    z-index: 1;
+  }
+
+  .footer {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 1;
+    padding: 1.25rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 20%, transparent 100%);
+
+    h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+    p { margin: 0; font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); }
+
+    .link {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+  }
+</style>

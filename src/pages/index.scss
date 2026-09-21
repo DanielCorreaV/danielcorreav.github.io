@@ -1,29 +1,31 @@
-.hero {
-  padding-block: 4rem 3rem;
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+.section {
+  padding-block: 2rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+
+  h2 {
+    margin: 0;
   }
-  p {
-    max-width: 40ch;
-    opacity: 0.8;
-  }
-  .btn {
-    display: inline-block;
-    margin-top: 1.5rem;
-    padding: 0.6rem 1.4rem;
-    background: var(--color-accent);
-    color: white;
+
+  .see-all {
+    font-size: 0.85rem;
+    color: var(--color-accent);
     text-decoration: none;
-    border-radius: 0.4rem;
+    &:hover {
+      opacity: 0.8;
+    }
   }
 }
 
-.section {
-  padding-block: 2rem;
-  h2 {
-    margin-bottom: 1.25rem;
-  }
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
 }
 
 .grid {

@@ -1,0 +1,86 @@
+---
+interface Props {
+  tag: string;
+  title: string;
+  description: string;
+  ctaLabel: string;
+  ctaHref: string;
+  accent: string;
+}
+const { tag, title, description, ctaLabel, ctaHref, accent } = Astro.props;
+---
+<section class="announcement" style={`--accent: ${accent};`}>
+  <div class="glow"></div>
+  <div class="content">
+    <span class="tag">{tag}</span>
+    <h2>{title}</h2>
+    <p>{description}</p>
+    <a href={ctaHref} class="cta">{ctaLabel} →</a>
+  </div>
+</section>
+
+<style lang="scss">
+  .announcement {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #050506;
+    border: 1px solid var(--color-border);
+    padding: 3rem 2.5rem;
+    margin-block: 2rem 3rem;
+    min-height: 260px;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .glow {
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(circle at 75% 20%, var(--accent) 0%, transparent 45%),
+      radial-gradient(circle at 30% 85%, var(--accent) 0%, transparent 35%);
+    filter: blur(70px);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    max-width: 34rem;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 999px;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    margin: 0 0 0.75rem;
+    color: #fff;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0 0 1.5rem;
+  }
+
+  .cta {
+    display: inline-block;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 2px;
+    transition: opacity 0.2s ease;
+    &:hover { opacity: 0.75; }
+  }
+</style>

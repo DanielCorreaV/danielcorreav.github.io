@@ -1,0 +1,113 @@
+---
+interface ActivityItem {
+  title: string;
+  tag: string;
+  date: Date;
+  href: string;
+  accent: string;
+}
+interface Props {
+  items: ActivityItem[];
+}
+const { items } = Astro.props;
+
+const formatter = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short', year: 'numeric' });
+---
+{items.length > 0 ? (
+  <ul class="timeline">
+    {items.map((item) => (
+      <li class="timeline-item" style={`--accent: ${item.accent}`}>
+        <span class="dot"></span>
+        <a href={item.href} class="entry">
+          <span class="date">{formatter.format(item.date)}</span>
+          <span class="tag">{item.tag}</span>
+          <span class="title">{item.title}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+) : (
+  <p class="empty">Todavía no hay actividad anterior — vuelve pronto.</p>
+)}
+
+<style lang="scss">
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 6px;
+      bottom: 6px;
+      width: 1px;
+      background: var(--color-border);
+    }
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-left: 2rem;
+    padding-block: 0.85rem;
+
+    &:first-child { padding-top: 0; }
+    &:last-child { padding-bottom: 0; }
+  }
+
+  .dot {
+    position: absolute;
+    left: 0;
+    top: 1.1rem;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  .entry {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    text-decoration: none;
+    color: var(--color-text);
+
+    .date {
+      font-size: 0.75rem;
+      opacity: 0.5;
+      min-width: 5.5rem;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      padding: 0.1rem 0.5rem;
+    }
+
+    .title {
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    &:hover .title { color: var(--color-accent); }
+  }
+
+  .empty {
+    opacity: 0.6;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    .entry { flex-direction: column; gap: 0.3rem; }
+    .date { min-width: unset; }
+  }
+</style>
