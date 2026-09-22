@@ -1,84 +1,282 @@
 ---
 interface CarouselProject {
-  title: string; tagline: string; accent: string;
-  cover: string; href: string; techTags: string[]; status: string; classifications: string[];
+  title: string;
+  tagline: string;
+  description: string;
+  accent: string;
+  cover: string;
+  href: string;
+  techTags: string[];
+  statusLabel: string;
 }
 interface Props { projects: CarouselProject[]; }
 const { projects } = Astro.props;
+
+const PAGE_SIZE = 3;
+const pages: CarouselProject[][] = [];
+for (let i = 0; i < projects.length; i += PAGE_SIZE) {
+  pages.push(projects.slice(i, i + PAGE_SIZE));
+}
+const first = projects[0];
 ---
-<div class="carousel-wrapper">
-  <button class="carousel-btn prev" aria-label="Anterior" data-dir="-1">‹</button>
-  <ul class="carousel" role="list">
-    {projects.map(p => (
-      <li class="carousel-item" data-project-tags={[...p.techTags.map(t => t.toLowerCase()), p.status, ...p.classifications].join(',')}>
-        <a href={p.href} class="carousel-card" style={`--accent:${p.accent}`}>
-          <img src={p.cover} alt={p.title} loading="lazy" />
-          <div class="info">
-            <h3>{p.title}</h3>
-            <p>{p.tagline}</p>
-          </div>
-        </a>
-      </li>
-    ))}
-  </ul>
-  <button class="carousel-btn next" aria-label="Siguiente" data-dir="1">›</button>
+<div class="carousel-shell">
+  <div class="carousel-main">
+    <div class="carousel-row">
+      <button class="carousel-btn prev" aria-label="Página anterior" data-dir="-1" disabled>‹</button>
+
+      <div class="pages-viewport">
+        {pages.map((page, pageIndex) => (
+          <ul class:list={['carousel-page', { active: pageIndex === 0 }]} data-page={pageIndex} role="list">
+            {page.map((p, i) => {
+              const globalIndex = pageIndex * PAGE_SIZE + i;
+              return (
+                <li class="carousel-item" data-project-tags={[...p.techTags.map(t => t.toLowerCase())].join(',')}>
+                  <button
+                    type="button"
+                    class:list={['project-btn', { selected: globalIndex === 0 }]}
+                    style={`--accent:${p.accent}`}
+                    data-global-index={globalIndex}
+                    data-title={p.title}
+                    data-description={p.description}
+                    data-tags={p.techTags.join(',')}
+                    data-status={p.statusLabel}
+                    data-href={p.href}
+                    data-cover={p.cover}
+                  >
+                    <img src={p.cover} alt={p.title} loading="lazy" />
+                    <div class="info">
+                      <h3>{p.title}</h3>
+                      <p>{p.tagline}</p>
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        ))}
+      </div>
+
+      <button class="carousel-btn next" aria-label="Página siguiente" data-dir="1">›</button>
+    </div>
+
+    {pages.length > 1 && (
+      <ul class="carousel-dots" role="tablist">
+        {pages.map((_, i) => (
+          <li>
+            <button class:list={['dot', { active: i === 0 }]} data-page-index={i} aria-label={`Ir a página ${i + 1}`}></button>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+
+  <aside class="project-panel">
+    <img id="panel-cover" src={first?.cover} alt="" />
+    <span id="panel-status" class="panel-status">{first?.statusLabel}</span>
+    <h3 id="panel-title">{first?.title}</h3>
+    <p id="panel-description">{first?.description}</p>
+    <div id="panel-tags" class="panel-tags">
+      {first?.techTags.map(t => <span class="tech-tag">{t}</span>)}
+    </div>
+    <a id="panel-link" class="panel-cta" href={first?.href}>Ver info →</a>
+  </aside>
 </div>
 
 <script>
-  document.querySelectorAll<HTMLElement>('.carousel-wrapper').forEach((wrapper) => {
-    const track = wrapper.querySelector<HTMLElement>('.carousel')!;
-    const prevBtn = wrapper.querySelector<HTMLButtonElement>('.carousel-btn.prev')!;
-    const nextBtn = wrapper.querySelector<HTMLButtonElement>('.carousel-btn.next')!;
+   document.querySelectorAll<HTMLElement>('.carousel-shell').forEach((shell) => {
+    const prevBtn = shell.querySelector<HTMLButtonElement>('.carousel-btn.prev')!;
+    const nextBtn = shell.querySelector<HTMLButtonElement>('.carousel-btn.next')!;
+    const pageEls = Array.from(shell.querySelectorAll<HTMLElement>('.carousel-page'));
+    const dots = Array.from(shell.querySelectorAll<HTMLButtonElement>('.dot'));
+    const projectBtns = Array.from(shell.querySelectorAll<HTMLButtonElement>('.project-btn'));
 
-    function updateArrows() {
-      const scrollable = track.scrollWidth > track.clientWidth + 4;
-      wrapper.classList.toggle('no-scroll', !scrollable);
-      prevBtn.disabled = track.scrollLeft <= 4;
-      nextBtn.disabled = scrollable
-        ? track.scrollLeft >= track.scrollWidth - track.clientWidth - 4
-        : true;
-    }
+    const panelCover = shell.querySelector<HTMLImageElement>('#panel-cover')!;
+    const panelStatus = shell.querySelector<HTMLElement>('#panel-status')!;
+    const panelTitle = shell.querySelector<HTMLElement>('#panel-title')!;
+    const panelDescription = shell.querySelector<HTMLElement>('#panel-description')!;
+    const panelTags = shell.querySelector<HTMLElement>('#panel-tags')!;
+    const panelLink = shell.querySelector<HTMLAnchorElement>('#panel-link')!;
 
-    wrapper.querySelectorAll<HTMLButtonElement>('.carousel-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        track.scrollBy({ left: track.clientWidth * 0.8 * Number(btn.dataset.dir), behavior: 'smooth' });
-      });
-    });
+    let currentPage = 0;
+   const PAGE_SIZE_JS = 3; // debe igualar PAGE_SIZE del frontmatter
+   let currentProjectIndex = 0;
+   let intervalId: ReturnType<typeof setInterval> | null = null;
+   const AUTOPLAY_MS = 10_000;
+   const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+   function goToPage(index: number) {
+     currentPage = Math.max(0, Math.min(index, pageEls.length - 1));
+     pageEls.forEach((el, i) => el.classList.toggle('active', i === currentPage));
+     dots.forEach((d, i) => d.classList.toggle('active', i === currentPage));
+     prevBtn.disabled = currentPage === 0;
+     nextBtn.disabled = currentPage === pageEls.length - 1;
+   }
+   function selectProject(btn: HTMLButtonElement) {
+     projectBtns.forEach(b => b.classList.remove('selected'));
+     btn.classList.add('selected');
+     currentProjectIndex = Number(btn.dataset.globalIndex ?? 0);
+     panelCover.src = btn.dataset.cover ?? '';
+     panelStatus.textContent = btn.dataset.status ?? '';
+     panelTitle.textContent = btn.dataset.title ?? '';
+     panelDescription.textContent = btn.dataset.description ?? '';
+     panelLink.href = btn.dataset.href ?? '#';
+     const tags = (btn.dataset.tags ?? '').split(',').filter(Boolean);
+     panelTags.innerHTML = tags.map(t => `<span class="tech-tag">${t}</span>`).join('');
+   }
+   function advance() {
+     const nextIndex = (currentProjectIndex + 1) % projectBtns.length; // loop al final
+     const nextPage = Math.floor(nextIndex / PAGE_SIZE_JS);
+     if (nextPage !== currentPage) goToPage(nextPage);
+     selectProject(projectBtns[nextIndex]);
+   }
 
-    track.addEventListener('scroll', updateArrows, { passive: true });
-    window.addEventListener('resize', updateArrows);
-    updateArrows();
+   function startAutoplay() {
+     if (prefersReducedMotion || projectBtns.length <= 1) return;
+     stopAutoplay();
+     intervalId = setInterval(advance, AUTOPLAY_MS);
+   }
+
+   function stopAutoplay() {
+     if (intervalId !== null) {
+       clearInterval(intervalId);
+       intervalId = null;
+     }
+   }
+   prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
+   nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
+   dots.forEach(dot => dot.addEventListener('click', () => goToPage(Number(dot.dataset.pageIndex))));
+   projectBtns.forEach(btn => btn.addEventListener('click', () => selectProject(btn)));
+
+   shell.addEventListener('mouseenter', stopAutoplay);
+   shell.addEventListener('mouseleave', startAutoplay);
+   goToPage(0);
+   startAutoplay();
   });
 </script>
 
 <style lang="scss">
-  .carousel-wrapper { position: relative; display: flex; align-items: center; gap: 0.5rem; }
-  .carousel {
-    display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory;
-    list-style: none; margin: 0; padding: 0.25rem 0.25rem 1rem;
-    scrollbar-width: thin;
-    flex: 1 1 0%;
-    min-width: 0; // clave: sin esto el <ul> nunca se encoge y el overflow-x nunca se activa
+  .carousel-shell {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    align-items: start;
   }
-  .carousel-item { flex: 0 0 auto; width: min(280px, 75vw); scroll-snap-align: start; }
-  .carousel-card {
-    display: block; border-radius: 0.75rem; overflow: hidden;
-    border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text);
-    transition: border-color 0.2s ease;
+
+  .carousel-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .pages-viewport { flex: 1; min-width: 0; }
+
+  .carousel-page {
+    display: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    &.active { display: grid; }
+  }
+
+  .project-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0;
+    color: var(--color-text);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font: inherit;
+
     &:hover { border-color: var(--accent); }
+    &.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
     img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
     .info { padding: 1rem; h3 { margin: 0 0 0.3rem; font-size: 1rem; } p { margin: 0; font-size: 0.85rem; opacity: 0.7; } }
   }
+
   .carousel-btn {
-    flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: 50%;
-    border: 1px solid var(--color-border); background: var(--color-bg); color: var(--color-text);
-    font-size: 1.2rem; cursor: pointer; display: none;
-    transition: opacity 0.2s ease, border-color 0.2s ease;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
     &:hover:not(:disabled) { border-color: var(--color-accent); }
     &:disabled { opacity: 0.3; cursor: default; }
   }
-  .carousel-wrapper.no-scroll .carousel-btn { display: none !important; }
-  @media (min-width: 640px) {
-    .carousel-btn { display: flex; align-items: center; justify-content: center; }
+
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; border: none; padding: 0;
+    background: var(--color-border); cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    &.active { background: var(--color-accent); transform: scale(1.35); }
+  }
+
+  .project-panel {
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    position: sticky;
+    top: 5rem;
+
+    img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 0.5rem; margin-bottom: 0.85rem; }
+    h3 { margin: 0 0 0.5rem; font-size: 1.1rem; }
+    p { margin: 0 0 0.85rem; font-size: 0.85rem; opacity: 0.75; line-height: 1.5; }
+  }
+
+  .panel-status {
+    display: inline-block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    border-radius: 999px;
+    padding: 0.15rem 0.55rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .panel-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+  .tech-tag { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--color-border); opacity: 0.85; }
+
+  .panel-cta {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-accent);
+    padding-bottom: 2px;
+    &:hover { opacity: 0.8; }
+  }
+
+  @media (max-width: 860px) {
+    .carousel-shell { grid-template-columns: 1fr; }
+    .project-panel { position: static; }
+  }
+
+  @media (max-width: 560px) {
+    .carousel-page { grid-template-columns: 1fr; }
   }
 </style>

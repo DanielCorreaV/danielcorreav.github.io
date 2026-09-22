@@ -38,8 +38,13 @@ const statusTagOptions = Object.entries(statusLabels).map(([value, label]) => ({
     </div>
   </section>
 
-  <section class="section" data-project-section>
+    <section class="section" data-project-section>
     <h2>Personales</h2>
+   <p class="section-intro">
+    Proyectos que empiezo por mi cuenta — algunos son experimentos para probar una idea o tecnología
+     puntual, y otros arrancaron como prueba de concepto que todavía tengo planeado retomar y llevar
+     más lejos.
+   </p>
     <ProjectCarousel
       projects={personales.map(p => ({
         title: p.title, tagline: p.tagline, accent: p.accent,
@@ -51,7 +56,7 @@ const statusTagOptions = Object.entries(statusLabels).map(([value, label]) => ({
 
   <section class="section" data-project-section>
     <h2>Práctica y experimentos</h2>
-    <p class="practice-intro">
+    <p class="section-intro">
       Estos proyectos son experimentales — hechos para probar una tecnología, cumplir con una tarea
       universitaria, o simplemente aprender haciendo. Muchos son funcionales pero no están pulidos
       a nivel visual ni de producto.
@@ -87,6 +92,6 @@ const statusTagOptions = Object.entries(statusLabels).map(([value, label]) => ({
     h2 { margin: 0 0 1.25rem; }
   }
   .featured-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-  .practice-intro { opacity: 0.7; max-width: 60ch; margin: 0 0 1.5rem; font-size: 0.9rem; }
+  .section-intro { opacity: 0.7; max-width: 60ch; margin: 0 0 1.5rem; font-size: 0.9rem; }
   .practice-list { display: flex; flex-direction: column; gap: 1rem; }
 </style>
