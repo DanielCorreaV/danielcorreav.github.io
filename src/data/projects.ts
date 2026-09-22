@@ -8,10 +8,10 @@ export interface Project {
   description: string;
   techTags: string[];
   status: ProjectStatus;
-  classification: ProjectClassification;
+  classifications: ProjectClassification[];
   accent: string;
   cover: string;
-  href?: string; // solo destacado/personal (páginas propias)
+  href?: string;
   githubUrl?: string;
   liveUrl?: string;
 }
@@ -30,12 +30,25 @@ export const projects: Project[] = [
     description: "Descripción más larga.",
     techTags: ["Astro", "TypeScript"],
     status: "completado",
-    classification: "destacado",
+    classifications: ["destacado", "personal"],
     accent: "#4f8cff",
     cover: "/images/projects/proyecto-uno.jpg",
     href: "/proyectos/proyecto-uno",
     githubUrl: "https://github.com/tu-usuario/proyecto-uno",
     liveUrl: "https://proyecto-uno.tudominio.com",
+  },
+  {
+    slug: "proyecto-dos",
+    title: "Proyecto Dos",
+    tagline: "Otro proyecto destacado de ejemplo.",
+    description: "Descripción más larga.",
+    techTags: ["Astro", "Svelte"],
+    status: "completado",
+    classifications: ["destacado"],
+    accent: "#ff4f6d",
+    cover: "/images/projects/proyecto-dos.jpg",
+    href: "/proyectos/proyecto-dos",
+    githubUrl: "https://github.com/tu-usuario/proyecto-dos",
   },
   {
     slug: "app-recetas",
@@ -44,7 +57,33 @@ export const projects: Project[] = [
     description: "Aplicación móvil para organizar recetas.",
     techTags: ["Angular", "Ionic"],
     status: "en-progreso",
-    classification: "personal",
+    classifications: ["personal"],
+    accent: "#ff8a3d",
+    cover: "/images/projects/app-recetas.jpg",
+    href: "/proyectos/app-recetas",
+    githubUrl: "https://github.com/tu-usuario/app-recetas",
+  },
+  {
+    slug: "app-recetas",
+    title: "App de Recetas",
+    tagline: "Ionic + Angular, proyecto personal.",
+    description: "Aplicación móvil para organizar recetas.",
+    techTags: ["Angular", "Ionic"],
+    status: "en-progreso",
+    classifications: ["personal"],
+    accent: "#ff8a3d",
+    cover: "/images/projects/app-recetas.jpg",
+    href: "/proyectos/app-recetas",
+    githubUrl: "https://github.com/tu-usuario/app-recetas",
+  },
+  {
+    slug: "app-recetas",
+    title: "App de Recetas",
+    tagline: "Ionic + Angular, proyecto personal.",
+    description: "Aplicación móvil para organizar recetas.",
+    techTags: ["Angular", "Ionic"],
+    status: "en-progreso",
+    classifications: ["personal"],
     accent: "#ff8a3d",
     cover: "/images/projects/app-recetas.jpg",
     href: "/proyectos/app-recetas",
@@ -58,10 +97,22 @@ export const projects: Project[] = [
       "Tablero kanban hecho para practicar drag & drop y estado global.",
     techTags: ["Svelte"],
     status: "completado",
-    classification: "practica",
+    classifications: ["practica", "personal"], // ejemplo de doble clasificación
     accent: "#7c5cff",
     cover: "/images/projects/clon-trello.jpg",
     githubUrl: "https://github.com/tu-usuario/clon-trello",
   },
-  // agrega el resto de tus proyectos aquí
+  {
+    slug: "calculadora-rpn",
+    title: "Calculadora RPN",
+    tagline: "",
+    description:
+      "Calculadora de notación polaca inversa, ejercicio de estructuras de datos.",
+    techTags: ["TypeScript"],
+    status: "completado",
+    classifications: ["practica"],
+    accent: "#ffb020",
+    cover: "/images/projects/calculadora-rpn.jpg",
+    githubUrl: "https://github.com/tu-usuario/calculadora-rpn",
+  },
 ];

@@ -1,0 +1,98 @@
+---
+interface Props {
+  techTags: string[];
+  statusTags: { value: string; label: string }[];
+}
+const { techTags, statusTags } = Astro.props;
+---
+<div class="tag-filter">
+  <div class="filter-group">
+    <span class="group-label">Tecnología</span>
+    <div class="chips">
+      {techTags.map(tag => (
+        <button class="chip" data-filter-tag={tag.toLowerCase()}>{tag}</button>
+      ))}
+    </div>
+  </div>
+  <div class="filter-group">
+    <span class="group-label">Estado</span>
+    <div class="chips">
+      {statusTags.map(s => (
+        <button class="chip" data-filter-tag={s.value}>{s.label}</button>
+      ))}
+    </div>
+  </div>
+  <button id="clear-filters" class="clear-btn" hidden>Limpiar filtros</button>
+</div>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.chip');
+  const clearBtn = document.getElementById('clear-filters');
+  const active = new Set<string>();
+
+  function applyFilters() {
+    clearBtn?.toggleAttribute('hidden', active.size === 0);
+
+    document.querySelectorAll<HTMLElement>('[data-project-tags]').forEach(card => {
+      const tags = (card.dataset.projectTags ?? '').split(',');
+      const matches = active.size === 0 || tags.some(t => active.has(t));
+      card.classList.toggle('is-hidden', !matches);
+    });
+
+    document.querySelectorAll<HTMLElement>('[data-project-section]').forEach(section => {
+      const visible = section.querySelectorAll('[data-project-tags]:not(.is-hidden)').length;
+      section.classList.toggle('is-empty', visible === 0);
+    });
+  }
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const tag = chip.dataset.filterTag!;
+      chip.classList.toggle('active');
+      active.has(tag) ? active.delete(tag) : active.add(tag);
+      applyFilters();
+    });
+  });
+
+  clearBtn?.addEventListener('click', () => {
+    active.clear();
+    chips.forEach(c => c.classList.remove('active'));
+    applyFilters();
+  });
+</script>
+
+<style lang="scss">
+  .tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .group-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.5; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: none;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    &:hover { border-color: var(--color-accent); }
+    &.active { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+  }
+  .clear-btn {
+    align-self: center;
+    font-size: 0.8rem;
+    color: var(--color-accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+</style>

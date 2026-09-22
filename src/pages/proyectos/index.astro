@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FeaturedProjectCard from '../../components/FeaturedProjectCard.astro';
+import ProjectCarousel from '../../components/ProjectCarousel.astro';
+import PracticeProjectCard from '../../components/PracticeProjectCard.astro';
+import TagFilterBar from '../../components/TagFilterBar.astro';
+import { projects, statusLabels } from '../../data/projects';
+
+const destacados = projects.filter(p => p.classifications.includes('destacado'));
+const personales = projects.filter(p => p.classifications.includes('personal'));
+const practica = projects.filter(p => p.classifications.includes('practica'));
+
+const techTags = [...new Set(projects.flatMap(p => p.techTags))].sort();
+const statusTagOptions = Object.entries(statusLabels).map(([value, label]) => ({ value, label }));
+---
+<BaseLayout title="Proyectos — Tu Nombre" description="Portafolio de proyectos: destacados, personales y de práctica.">
+  <header class="page-header">
+    <h1>Proyectos</h1>
+    <p>Una recopilación de lo que he construido — desde productos pulidos hasta experimentos de aprendizaje.</p>
+  </header>
+
+  <TagFilterBar techTags={techTags} statusTags={statusTagOptions} />
+
+  <section class="section" data-project-section>
+    <h2>Destacados</h2>
+    <div class="featured-grid">
+      {destacados.map((p, i) => (
+        <FeaturedProjectCard
+          index={i + 1}
+          title={p.title}
+          tagline={p.tagline}
+          tag={p.techTags[0] ?? ''}
+          accent={p.accent}
+          href={p.href ?? p.githubUrl ?? '#'}
+          tags={[...p.techTags.map(t => t.toLowerCase()), p.status, ...p.classifications].join(',')}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="section" data-project-section>
+    <h2>Personales</h2>
+    <ProjectCarousel
+      projects={personales.map(p => ({
+        title: p.title, tagline: p.tagline, accent: p.accent,
+        cover: p.cover, href: p.href ?? p.githubUrl ?? '#',
+        techTags: p.techTags, status: p.status, classifications: p.classifications,
+      }))}
+    />
+  </section>
+
+  <section class="section" data-project-section>
+    <h2>Práctica y experimentos</h2>
+    <p class="practice-intro">
+      Estos proyectos son experimentales — hechos para probar una tecnología, cumplir con una tarea
+      universitaria, o simplemente aprender haciendo. Muchos son funcionales pero no están pulidos
+      a nivel visual ni de producto.
+    </p>
+    <div class="practice-list">
+      {practica.map(p => (
+        <PracticeProjectCard
+          title={p.title}
+          description={p.description}
+          cover={p.cover}
+          techTags={p.techTags}
+          status={statusLabels[p.status]}
+          githubUrl={p.githubUrl!}
+          classifications={p.classifications}
+          liveUrl={p.liveUrl}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .page-header {
+    padding-block: 2.5rem 1.5rem;
+    h1 { margin: 0 0 0.5rem; font-size: 2rem; }
+    p { opacity: 0.7; max-width: 40ch; margin: 0; }
+  }
+  .section {
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--color-border);
+    &:first-of-type { border-top: none; }
+    &.is-empty { display: none; }
+    h2 { margin: 0 0 1.25rem; }
+  }
+  .featured-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+  .practice-intro { opacity: 0.7; max-width: 60ch; margin: 0 0 1.5rem; font-size: 0.9rem; }
+  .practice-list { display: flex; flex-direction: column; gap: 1rem; }
+</style>

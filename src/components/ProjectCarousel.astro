@@ -1,0 +1,84 @@
+---
+interface CarouselProject {
+  title: string; tagline: string; accent: string;
+  cover: string; href: string; techTags: string[]; status: string; classifications: string[];
+}
+interface Props { projects: CarouselProject[]; }
+const { projects } = Astro.props;
+---
+<div class="carousel-wrapper">
+  <button class="carousel-btn prev" aria-label="Anterior" data-dir="-1">‹</button>
+  <ul class="carousel" role="list">
+    {projects.map(p => (
+      <li class="carousel-item" data-project-tags={[...p.techTags.map(t => t.toLowerCase()), p.status, ...p.classifications].join(',')}>
+        <a href={p.href} class="carousel-card" style={`--accent:${p.accent}`}>
+          <img src={p.cover} alt={p.title} loading="lazy" />
+          <div class="info">
+            <h3>{p.title}</h3>
+            <p>{p.tagline}</p>
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <button class="carousel-btn next" aria-label="Siguiente" data-dir="1">›</button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.carousel-wrapper').forEach((wrapper) => {
+    const track = wrapper.querySelector<HTMLElement>('.carousel')!;
+    const prevBtn = wrapper.querySelector<HTMLButtonElement>('.carousel-btn.prev')!;
+    const nextBtn = wrapper.querySelector<HTMLButtonElement>('.carousel-btn.next')!;
+
+    function updateArrows() {
+      const scrollable = track.scrollWidth > track.clientWidth + 4;
+      wrapper.classList.toggle('no-scroll', !scrollable);
+      prevBtn.disabled = track.scrollLeft <= 4;
+      nextBtn.disabled = scrollable
+        ? track.scrollLeft >= track.scrollWidth - track.clientWidth - 4
+        : true;
+    }
+
+    wrapper.querySelectorAll<HTMLButtonElement>('.carousel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        track.scrollBy({ left: track.clientWidth * 0.8 * Number(btn.dataset.dir), behavior: 'smooth' });
+      });
+    });
+
+    track.addEventListener('scroll', updateArrows, { passive: true });
+    window.addEventListener('resize', updateArrows);
+    updateArrows();
+  });
+</script>
+
+<style lang="scss">
+  .carousel-wrapper { position: relative; display: flex; align-items: center; gap: 0.5rem; }
+  .carousel {
+    display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory;
+    list-style: none; margin: 0; padding: 0.25rem 0.25rem 1rem;
+    scrollbar-width: thin;
+    flex: 1 1 0%;
+    min-width: 0; // clave: sin esto el <ul> nunca se encoge y el overflow-x nunca se activa
+  }
+  .carousel-item { flex: 0 0 auto; width: min(280px, 75vw); scroll-snap-align: start; }
+  .carousel-card {
+    display: block; border-radius: 0.75rem; overflow: hidden;
+    border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text);
+    transition: border-color 0.2s ease;
+    &:hover { border-color: var(--accent); }
+    img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+    .info { padding: 1rem; h3 { margin: 0 0 0.3rem; font-size: 1rem; } p { margin: 0; font-size: 0.85rem; opacity: 0.7; } }
+  }
+  .carousel-btn {
+    flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: 50%;
+    border: 1px solid var(--color-border); background: var(--color-bg); color: var(--color-text);
+    font-size: 1.2rem; cursor: pointer; display: none;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+    &:hover:not(:disabled) { border-color: var(--color-accent); }
+    &:disabled { opacity: 0.3; cursor: default; }
+  }
+  .carousel-wrapper.no-scroll .carousel-btn { display: none !important; }
+  @media (min-width: 640px) {
+    .carousel-btn { display: flex; align-items: center; justify-content: center; }
+  }
+</style>

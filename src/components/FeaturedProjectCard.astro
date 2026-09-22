@@ -6,11 +6,12 @@ interface Props {
   tag: string;
   accent: string;
   href: string;
+  tags?: string;
 }
-const { index, title, tagline, tag, accent, href } = Astro.props;
+const { index, title, tagline, tag, accent, href, tags } = Astro.props;
 const num = String(index).padStart(2, '0');
 ---
-<a class="project-card" href={href} style={`--accent: ${accent};`}>
+<a class="project-card" href={href} style={`--accent: ${accent};`} data-project-tags={tags}>
   <div class="glow"></div>
   <span class="index">{num}</span>
   <span class="tag">{tag}</span>

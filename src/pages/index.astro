@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import AnnouncementBanner from '../components/AnnouncementBanner.astro';
 import FeaturedProjectCard from '../components/FeaturedProjectCard.astro';
 import ActivityTimeline from '../components/ActivityTimeline.astro';
+import { projects } from '../data/projects';
 
 const announcements = await getCollection('announcements');
 const sortedAnnouncements = announcements.sort(
@@ -12,11 +13,15 @@ const sortedAnnouncements = announcements.sort(
 const latestAnnouncement = sortedAnnouncements[0];
 const pastAnnouncements = sortedAnnouncements.slice(1, 6); // próximas 5 más recientes
 
-const featuredProjects = [
-  { title: 'Proyecto Uno', tagline: 'Breve descripción del proyecto.', tag: 'Web App', accent: '#4f8cff', href: '/proyectos/proyecto-uno' },
-  { title: 'Proyecto Dos', tagline: 'Breve descripción del proyecto.', tag: 'Mobile', accent: '#ff4f6d', href: '/proyectos/proyecto-dos' },
-  { title: 'Proyecto Tres', tagline: 'Breve descripción del proyecto.', tag: 'Diseño UI', accent: '#ffb020', href: '/proyectos/proyecto-tres' },
-];
+// const featuredProjects = [
+//   { title: 'Proyecto Uno', tagline: 'Breve descripción del proyecto.', tag: 'Web App', accent: '#4f8cff', href: '/proyectos/proyecto-uno' },
+//   { title: 'Proyecto Dos', tagline: 'Breve descripción del proyecto.', tag: 'Mobile', accent: '#ff4f6d', href: '/proyectos/proyecto-dos' },
+//   { title: 'Proyecto Tres', tagline: 'Breve descripción del proyecto.', tag: 'Diseño UI', accent: '#ffb020', href: '/proyectos/proyecto-tres' },
+// ];
+
+const featuredProjects = projects.filter(p => p.classifications.includes('destacado'))
+.slice(0, 3)
+.map(p => ({ title: p.title, tagline: p.tagline, tag: p.techTags[0] ?? '', accent: p.accent, href: p.href! }));
 ---
 <BaseLayout title="Tu Nombre — Portafolio" description="Desarrollador de software, proyectos y notas.">
 
