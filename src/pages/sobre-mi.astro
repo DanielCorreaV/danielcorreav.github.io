@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ResumeHero from '../components/ResumeHero.astro';
+import StatsBar from '../components/StatsBar.astro';
+import ExperienceTimeline from '../components/ExperienceTimeline.astro';
+import EducationList from '../components/EducationList.astro';
+import SkillsGrid from '../components/SkillsGrid.astro';
+import LanguagesCertifications from '../components/LanguagesCertifications.astro';
+import { profile, experience, education, skillGroups, languages, certifications, workingStyle } from '../data/resume';
+---
+<BaseLayout title={`Sobre mí — ${profile.fullName}`} description={profile.summary}>
+  <ResumeHero />
+  <StatsBar />
+
+  <section class="section">
+    <h2>Experiencia laboral</h2>
+    <ExperienceTimeline items={experience} />
+  </section>
+
+  <section class="section">
+    <h2>Educación</h2>
+    <EducationList items={education} />
+  </section>
+
+  <section class="section">
+    <h2>Habilidades técnicas</h2>
+    <SkillsGrid groups={skillGroups} />
+  </section>
+
+  <section class="section">
+    <h2>Idiomas y certificaciones</h2>
+    <LanguagesCertifications languages={languages} certifications={certifications} />
+  </section>
+
+  <section class="section working-style">
+    <h2>Cómo trabajo</h2>
+    <p>{workingStyle}</p>
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .section {
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--color-border);
+    h2 { margin: 0 0 1.5rem; }
+  }
+  .working-style p { opacity: 0.8; line-height: 1.7; max-width: 60ch; }
+</style>

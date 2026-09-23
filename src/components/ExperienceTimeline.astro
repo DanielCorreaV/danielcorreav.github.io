@@ -1,0 +1,56 @@
+---
+import type { ExperienceItem } from '../data/resume';
+interface Props { items: ExperienceItem[]; }
+const { items } = Astro.props;
+---
+<ul class="exp-timeline">
+  {items.map(item => (
+    <li class="exp-item">
+      <span class="dot"></span>
+      <div class="exp-content">
+        <div class="exp-header">
+          <h3>{item.role} · <span class="company">{item.company}</span></h3>
+          <span class="dates">{item.startDate} — {item.endDate}</span>
+        </div>
+        <ul class="bullets">
+          {item.bullets.map(b => <li>{b}</li>)}
+        </ul>
+        <div class="tags">
+          {item.techTags.map(t => <span class="tech-tag">{t}</span>)}
+        </div>
+      </div>
+    </li>
+  ))}
+</ul>
+
+<style lang="scss">
+  .exp-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 8px;
+      bottom: 8px;
+      width: 1px;
+      background: var(--color-border);
+    }
+  }
+  .exp-item { position: relative; padding-left: 2rem; padding-bottom: 2rem; &:last-child { padding-bottom: 0; } }
+  .dot { position: absolute; left: 0; top: 0.35rem; width: 11px; height: 11px; border-radius: 50%; background: var(--color-accent); }
+  .exp-header {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem;
+    h3 { margin: 0; font-size: 1.05rem; .company { color: var(--color-accent); font-weight: 500; } }
+    .dates { font-size: 0.8rem; opacity: 0.55; white-space: nowrap; }
+  }
+  .bullets {
+    margin: 0 0 0.75rem;
+    padding-left: 1.1rem;
+    li { font-size: 0.9rem; opacity: 0.8; margin-bottom: 0.3rem; line-height: 1.5; }
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tech-tag { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--color-border); opacity: 0.85; }
+</style>

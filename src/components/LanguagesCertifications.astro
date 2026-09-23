@@ -1,0 +1,32 @@
+---
+import type { LanguageItem, CertificationItem } from '../data/resume';
+interface Props { languages: LanguageItem[]; certifications: CertificationItem[]; }
+const { languages, certifications } = Astro.props;
+---
+<div class="lc-grid">
+  <div>
+    <h3>Idiomas</h3>
+    <ul class="lc-list">
+      {languages.map(l => (
+        <li><span class="name">{l.name}</span><span class="level">{l.level}</span></li>
+      ))}
+    </ul>
+  </div>
+  <div>
+    <h3>Certificaciones</h3>
+    <ul class="lc-list">
+      {certifications.map(c => (
+        <li><span class="name">{c.name}</span><span class="level">{c.issuer} · {c.year}</span></li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<style lang="scss">
+  .lc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; }
+  h3 { margin: 0 0 0.85rem; font-size: 0.95rem; opacity: 0.8; }
+  .lc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; }
+  .lc-list li { display: flex; flex-direction: column; font-size: 0.9rem; }
+  .name { font-weight: 600; }
+  .level { font-size: 0.8rem; opacity: 0.6; }
+</style>
