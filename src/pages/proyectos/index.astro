@@ -50,6 +50,7 @@ const statusTagOptions = Object.entries(statusLabels).map(([value, label]) => ({
         title: p.title, tagline: p.tagline, accent: p.accent,
         cover: p.cover, href: p.href ?? p.githubUrl ?? '#',
         techTags: p.techTags, status: p.status, classifications: p.classifications,
+        description: p.description, statusLabel: statusLabels[p.status],
       }))}
     />
   </section>

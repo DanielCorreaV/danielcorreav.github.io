@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactIconLink from '../components/ContactIconLink.astro';
+import { contactLinks } from '../data/contactLinks';
+---
+<BaseLayout title="Contacto — Tu Nombre" description="Encuéntrame en LinkedIn, GitHub, Computrabajo o escríbeme por correo.">
+  <section class="contact-section">
+    <h1>Hablemos</h1>
+    <p>Estas son las formas más rápidas de encontrarme.</p>
+    <div class="contact-grid">
+      {contactLinks.map((link) => (
+        <ContactIconLink
+          label={link.label}
+          icon={link.icon}
+          href={link.href}
+          accent={link.accent}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .contact-section {
+    padding-block: 3rem 4rem;
+    text-align: center;
+
+    h1 { margin: 0 0 0.5rem; font-size: 2rem; }
+    p { opacity: 0.7; margin: 0 auto 2.5rem; max-width: 32ch; }
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.25rem;
+    max-width: 40rem;
+    margin-inline: auto;
+  }
+</style>

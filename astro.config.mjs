@@ -1,4 +1,5 @@
 import { defineConfig } from "astro/config";
+import icon from "astro-icon";
 
 export default defineConfig({
   site: "https://tu-dominio.com", // cámbialo cuando tengas el dominio
@@ -9,4 +10,12 @@ export default defineConfig({
       prefixDefaultLocale: false, // /proyectos (es), /en/proyectos (en)
     },
   },
+  integrations: [icon()],
+  vite: {
+     server: {
+       watch: {
+         ignored: ['**/hiberfil.sys', '**/pagefile.sys', '**/swapfile.sys', '**/DumpStack.log.tmp'],
+       },
+     },
+   },
 });
