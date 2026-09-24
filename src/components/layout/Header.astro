@@ -17,21 +17,29 @@ const links = [
 ---
 <header class="site-header">
   <div class="container inner">
-    <a href={translatePath('/')} class="logo">Daniel Correa</a>
-    <div class="header-actions">
-      <LanguageSwitcher />
-      <ThemeToggle />
+    <a href={translatePath('/')} class="logo">
+      <img src="/images/dcv-icon.png" alt="Logo de Daniel Correa Vega" class="logo-icon" />
+      <span>DANIEL CORREA VEGA</span>
+    </a>
+
+    <div class="right-group">
+      <nav id="nav-menu">
+        <ul>
+          {links.map(link => (
+            <li><a href={link.href}>{link.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="actions">
+        <LanguageSwitcher />
+        <ThemeToggle />
+      </div>
+
       <button id="menu-toggle" aria-label="Abrir menú" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
-    <nav id="nav-menu">
-      <ul>
-        {links.map(link => (
-          <li><a href={link.href}>{link.label}</a></li>
-        ))}
-      </ul>
-    </nav>
   </div>
 </header>
 
@@ -62,17 +70,33 @@ const links = [
   }
 
   .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     font-weight: 700;
     font-size: 1.1rem;
     color: var(--color-text);
     text-decoration: none;
     letter-spacing: -0.01em;
+
+    .logo-icon {
+      width: 2rem;
+      height: 2rem;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
   }
 
-  .header-actions {
+  .right-group {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1.75rem;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   nav ul {
