@@ -1,6 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import { languages } from '../i18n/ui';
+import { languages } from '../../i18n/ui';
 
 const currentLang = Astro.currentLocale ?? 'es';
 const localePrefix = new RegExp(`^/(${Object.keys(languages).join('|')})(?=/|$)`);

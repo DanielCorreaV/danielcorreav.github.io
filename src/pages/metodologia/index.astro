@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allDocs = (await getCollection('methodology', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+const firstDoc = allDocs[0];
+---
+<BaseLayout title="Metodología — Tu Nombre" description="Una metodología de enseñanza especializada en sistemas.">
+  <section class="intro">
+    <h1>Nombre de tu metodología</h1>
+    <p class="lead">
+      Descripción breve de qué es, qué problema resuelve, y para quién está pensada.
+      Reemplaza este texto por tu presentación real.
+    </p>
+    {firstDoc && <a href={`/metodologia/${firstDoc.id}`} class="btn-primary">Empezar a leer →</a>}
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .intro {
+    max-width: 60ch;
+    padding-block: 4rem;
+    h1 { font-size: 2.2rem; margin: 0 0 1rem; }
+    .lead { opacity: 0.8; line-height: 1.7; margin: 0 0 2rem; font-size: 1.05rem; }
+  }
+  .btn-primary {
+    display: inline-block; padding: 0.65rem 1.4rem; border-radius: 0.4rem;
+    background: var(--color-accent); color: #fff; text-decoration: none; font-weight: 600;
+    &:hover { opacity: 0.85; }
+  }
+</style>

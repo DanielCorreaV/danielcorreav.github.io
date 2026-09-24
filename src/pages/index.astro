@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import AnnouncementBanner from '../components/AnnouncementBanner.astro';
-import FeaturedProjectCard from '../components/FeaturedProjectCard.astro';
-import ActivityTimeline from '../components/ActivityTimeline.astro';
+import AnnouncementBanner from '../components/home/AnnouncementBanner.astro';
+import FeaturedProjectCard from '../components/projects/FeaturedProjectCard.astro';
+import ActivityTimeline from '../components/home/ActivityTimeline.astro';
 import { projects } from '../data/projects';
 
 const announcements = await getCollection('announcements');

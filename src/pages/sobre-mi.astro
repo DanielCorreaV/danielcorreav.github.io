@@ -1,11 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ResumeHero from '../components/ResumeHero.astro';
-import StatsBar from '../components/StatsBar.astro';
-import ExperienceTimeline from '../components/ExperienceTimeline.astro';
-import EducationList from '../components/EducationList.astro';
-import SkillsGrid from '../components/SkillsGrid.astro';
-import LanguagesCertifications from '../components/LanguagesCertifications.astro';
+import ResumeHero from '../components/resume/ResumeHero.astro';
+import StatsBar from '../components/resume/StatsBar.astro';
+import ExperienceTimeline from '../components/resume/ExperienceTimeline.astro';
+import EducationList from '../components/resume/EducationList.astro';
+import SkillsGrid from '../components/resume/SkillsGrid.astro';
+import LanguagesCertifications from '../components/resume/LanguagesCertifications.astro';
 import { profile, experience, education, skillGroups, languages, certifications, workingStyle } from '../data/resume';
 ---
 <BaseLayout title={`Sobre mí — ${profile.fullName}`} description={profile.summary}>

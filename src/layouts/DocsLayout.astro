@@ -1,0 +1,122 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  title: string;
+  description: string;
+  currentId?: string;
+}
+const { title, description, currentId } = Astro.props;
+
+const allDocs = (await getCollection('methodology', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const sections = new Map<string, typeof allDocs>();
+for (const doc of allDocs) {
+  const list = sections.get(doc.data.section) ?? [];
+  list.push(doc);
+  sections.set(doc.data.section, list);
+}
+
+const currentIndex = allDocs.findIndex(d => d.id === currentId);
+const prevDoc = currentIndex > 0 ? allDocs[currentIndex - 1] : null;
+const nextDoc = currentIndex >= 0 && currentIndex < allDocs.length - 1 ? allDocs[currentIndex + 1] : null;
+---
+<BaseLayout title={title} description={description}>
+  <div class="docs-shell">
+    <aside class="docs-sidebar">
+      <a href="/metodologia" class="sidebar-home">Metodología</a>
+      {[...sections.entries()].map(([section, docs]) => (
+        <div class="sidebar-group">
+          <span class="group-label">{section}</span>
+          <ul>
+            {docs.map(doc => (
+              <li>
+                <a href={`/metodologia/${doc.id}`} class:list={['sidebar-link', { active: doc.id === currentId }]}>
+                  {doc.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </aside>
+
+    <div class="docs-content">
+      <slot />
+
+      {(prevDoc || nextDoc) && (
+        <nav class="docs-pagination">
+          {prevDoc ? (
+            <a href={`/metodologia/${prevDoc.id}`} class="pag-link prev">
+              <span class="pag-label">← Anterior</span>
+              <span class="pag-title">{prevDoc.data.title}</span>
+            </a>
+          ) : <span></span>}
+          {nextDoc && (
+            <a href={`/metodologia/${nextDoc.id}`} class="pag-link next">
+              <span class="pag-label">Siguiente →</span>
+              <span class="pag-title">{nextDoc.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )}
+    </div>
+  </div>
+</BaseLayout>
+
+<style lang="scss">
+  .docs-shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 3rem;
+    padding-block: 2rem 4rem;
+    @media (max-width: 760px) { grid-template-columns: 1fr; }
+  }
+  .docs-sidebar {
+    position: sticky;
+    top: 5rem;
+    align-self: start;
+    @media (max-width: 760px) { position: static; }
+  }
+  .sidebar-home {
+    display: block; font-weight: 700; margin-bottom: 1.5rem;
+    color: var(--color-text); text-decoration: none;
+    &:hover { color: var(--color-accent); }
+  }
+  .sidebar-group { margin-bottom: 1.5rem; }
+  .group-label {
+    display: block; font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 0.06em; opacity: 0.5; margin-bottom: 0.5rem;
+  }
+  .sidebar-group ul { list-style: none; margin: 0; padding: 0; }
+  .sidebar-link {
+    display: block; padding: 0.35rem 0 0.35rem 0.75rem; font-size: 0.9rem;
+    color: var(--color-text); opacity: 0.7; text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+    &:hover { opacity: 1; }
+    &.active { opacity: 1; color: var(--color-accent); border-color: var(--color-accent); font-weight: 600; }
+  }
+  .docs-content {
+    max-width: 68ch;
+    line-height: 1.7;
+    :global(h1) { font-size: 1.8rem; margin: 0 0 1rem; }
+    :global(h2) { font-size: 1.3rem; margin: 2rem 0 0.85rem; }
+    :global(p) { margin: 0 0 1rem; opacity: 0.85; }
+    :global(ul), :global(ol) { margin: 0 0 1rem; padding-left: 1.3rem; opacity: 0.85; }
+    :global(code) { background: var(--color-border); padding: 0.15rem 0.4rem; border-radius: 0.3rem; font-size: 0.85em; }
+  }
+  .docs-pagination {
+    display: flex; justify-content: space-between; gap: 1rem;
+    margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border);
+  }
+  .pag-link {
+    display: flex; flex-direction: column; text-decoration: none; color: var(--color-text);
+    &.next { text-align: right; margin-left: auto; }
+    &:hover .pag-title { color: var(--color-accent); }
+  }
+  .pag-label { font-size: 0.75rem; opacity: 0.5; margin-bottom: 0.2rem; }
+  .pag-title { font-size: 0.95rem; font-weight: 600; }
+</style>

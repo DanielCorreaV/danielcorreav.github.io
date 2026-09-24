@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import FeaturedProjectCard from '../../components/FeaturedProjectCard.astro';
-import ProjectCarousel from '../../components/ProjectCarousel.astro';
-import PracticeProjectCard from '../../components/PracticeProjectCard.astro';
-import TagFilterBar from '../../components/TagFilterBar.astro';
+import FeaturedProjectCard from '../../components/projects/FeaturedProjectCard.astro';
+import ProjectCarousel from '../../components/projects/ProjectCarousel.astro';
+import PracticeProjectCard from '../../components/projects/PracticeProjectCard.astro';
+import TagFilterBar from '../../components/projects/TagFilterBar.astro';
 import { projects, statusLabels } from '../../data/projects';
 
 const destacados = projects.filter(p => p.classifications.includes('destacado'));
