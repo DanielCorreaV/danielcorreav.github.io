@@ -35,7 +35,8 @@ export const profile = {
   fullName: "Daniel Correa Vega",
   role: "Desarrollador de Software Full Stack",
   summary:
-    "Construyo productos web con una experiencia de usuario cuidada y código que da gusto mantener. El backend es mi terreno favorito, pero me muevo con soltura en todo el stack. Me impulsa innovar, aprender y ampliar mis horizontes con nuevas tecnologías y enfoques.",
+    "Construyo productos web y mobile con foco en experiencia de usuario y código mantenible. Me interesa especialmente el backend, pero me muevo cómodo en todo el stack. Siempre busco formas de inovar y aprender, me gusta expandir siempre mis horizontes a nuevas tecnologias y enfoques.",
+
   location: "Cartagena de Indias, Colombia",
   photo: "/images/profile2.jpg",
   logo: "/images/dcv-icon.png",
@@ -55,10 +56,10 @@ export const experience: ExperienceItem[] = [
     startDate: "Ago 2024",
     endDate: "Presente",
     bullets: [
-      "Desarrollé módulos clave y servicios de la API del sistema.",
-      "Lideré al equipo de trabajo, fortaleciendo la comunicación y la resolución de problemas.",
-      "Diseñé parte del modelo principal de la base de datos.",
-      "Integré la API con el frontend, conectando el backend con la experiencia del usuario final.",
+      "Desarrollé módulos y servicios de la API con NestJS y TypeScript.",
+      "Lideré al equipo día a día: mantuve la comunicación fluida y ayudé a destrabar problemas.",
+      "Diseñé parte de la estructura de la base de datos.",
+      "Integré la API con el frontend para que todo funcionara de punta a punta.",
     ],
     techTags: ["NestJS", "TypeScript", "RxJS", "Jira", "Scrum"],
   },
@@ -68,9 +69,9 @@ export const experience: ExperienceItem[] = [
     startDate: "Ene 2025",
     endDate: "Jul 2025",
     bullets: [
-      "Mantuve la base de datos al día y elaboré reportes a la medida de cada solicitud.",
-      "Atendí a personas durante la numeración de documentos de carácter público y privado.",
-      "Digitalicé archivos para garantizar su vigencia en los registros digitales.",
+      "Mantuve la base de datos al día y armé los reportes que me solicitaban.",
+      "Atendí a las personas durante la numeración de documentos públicos y privados.",
+      "Digitalicé archivos para mantenerlos vigentes en los registros digitales.",
     ],
     techTags: ["Microsoft Office"],
   },
@@ -122,4 +123,4 @@ export const certifications: CertificationItem[] = [
 ];
 
 export const workingStyle =
-  'Prefiero iterar rápido y mostrar avances tempranos en lugar de desaparecer semanas persiguiendo algo "perfecto". Documento mis decisiones y dejo el código más claro de lo que lo encontré. No me gusta cometer errores, pero no les temo: los admito sin rodeos y aprendo de ellos para no repetirlos y mantenerme en constante mejora.';
+  'Prefiero mostrar avances pronto y ajustar con feedback, en vez de desaparecer semanas buscando algo "perfecto". Documento mis decisiones y trato de dejar el código más claro de como lo encontré. No me gusta equivocarme, pero cuando pasa lo asumo, lo arreglo y aprendo para no repetirlo. Para mí, un buen equipo es donde se pregunta sin miedo y se avanza juntos.';
