@@ -1,0 +1,36 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects, statusLabels } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'proyecto-uno')!;
+---
+<ProjectLayout
+  title={project.title}
+  tagline={project.tagline}
+  description={project.description}
+  cover={project.cover}
+  accent={project.accent}
+  status={statusLabels[project.status]}
+  techTags={project.techTags}
+  githubUrl={project.githubUrl}
+  liveUrl={project.liveUrl}
+>
+  <h2>El problema</h2>
+  <p>
+    Describe aquí qué problema resolvía este proyecto o qué te motivó a construirlo.
+    Este contenido es 100% libre — cada página de proyecto puede tener secciones
+    completamente distintas a las demás.
+  </p>
+
+  <h2>Cómo lo resolví</h2>
+  <p>
+    Explica tu enfoque, decisiones técnicas clave, o algún reto particular que enfrentaste.
+  </p>
+
+  <img src="/images/projects/proyecto-uno-detalle.jpg" alt="Captura del proyecto" />
+
+  <h2>Lo que aprendí</h2>
+  <p>
+    Cierre reflexivo (opcional) — qué harías distinto, o qué sigue para este proyecto.
+  </p>
+</ProjectLayout>

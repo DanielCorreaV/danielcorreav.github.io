@@ -1,0 +1,49 @@
+---
+import { githubUsername } from '../data/github';
+---
+<div class="gh-contrib">
+  <img
+    src={`https://github.com/users/${githubUsername}/contributions`}
+    alt={`Calendario de actividad en GitHub de ${githubUsername}`}
+    loading="lazy"
+  />
+  <a
+    class="gh-profile-link"
+    href={`https://github.com/${githubUsername}`}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Ver perfil completo en GitHub →
+  </a>
+</div>
+
+<style lang="scss">
+  .gh-contrib {
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    text-align: center;
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.4rem;
+      background: #fff; // el SVG de GitHub asume fondo claro
+    }
+  }
+
+  // El SVG de GitHub viene con estilo claro fijo — lo invertimos en tema oscuro
+  // para que no rompa visualmente contra el resto del sitio.
+  [data-theme='dark'] .gh-contrib img {
+    filter: invert(0.92) hue-rotate(180deg);
+  }
+
+  .gh-profile-link {
+    display: inline-block;
+    margin-top: 0.85rem;
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    &:hover { opacity: 0.8; }
+  }
+</style>

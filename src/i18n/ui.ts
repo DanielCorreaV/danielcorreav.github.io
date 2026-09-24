@@ -9,7 +9,7 @@ export const ui = {
   es: {
     "nav.home": "Inicio",
     "nav.projects": "Proyectos",
-    "nav.blog": "Blog",
+    "nav.notes": "Notas",
     "nav.about": "Sobre mí",
     "nav.contact": "Contacto",
     "home.hero.title": "Hola, soy Tu Nombre",
@@ -22,7 +22,7 @@ export const ui = {
   en: {
     "nav.home": "Home",
     "nav.projects": "Projects",
-    "nav.blog": "Blog",
+    "nav.notes": "Notas",
     "nav.about": "About",
     "nav.contact": "Contact",
     "home.hero.title": "Hi, I'm Tu Nombre",

@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GitHubContributionGraph from '../../components/GitHubContributionGraph.astro';
+import NoteCard from '../../components/NoteCard.astro';
+
+const allNotes = await getCollection('notes', ({ data }) => !data.draft);
+const sortedNotes = allNotes.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+<BaseLayout title="Notas — Tu Nombre" description="Actividad reciente en GitHub y notas técnicas cortas.">
+  <header class="page-header">
+    <h1>Notas</h1>
+    <p>Un registro liviano de lo que voy haciendo: actividad automática de GitHub, y apuntes técnicos cortos cuando resuelvo algo que vale la pena anotar.</p>
+  </header>
+
+  <section class="section">
+    <h2>Actividad en GitHub</h2>
+    <GitHubContributionGraph />
+  </section>
+
+  <section class="section">
+    <h2>Notas técnicas</h2>
+    {sortedNotes.length > 0 ? (
+      <div class="notes-grid">
+        {sortedNotes.map(note => (
+          <NoteCard
+            title={note.data.title}
+            description={note.data.description}
+            pubDate={note.data.pubDate}
+            tags={note.data.tags}
+            href={`/notas/${note.id}`}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="empty">Todavía no hay notas publicadas — vuelve pronto.</p>
+    )}
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .page-header { padding-block: 2.5rem 1.5rem; h1 { margin: 0 0 0.5rem; font-size: 2rem; } p { opacity: 0.7; max-width: 50ch; margin: 0; } }
+  .section { padding-block: 2.5rem; border-top: 1px solid var(--color-border); &:first-of-type { border-top: none; } h2 { margin: 0 0 1.25rem; } }
+  .notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+  .empty { opacity: 0.6; font-size: 0.9rem; }
+</style>

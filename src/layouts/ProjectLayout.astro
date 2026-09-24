@@ -1,0 +1,115 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  tagline: string;
+  description: string;
+  cover: string;
+  accent: string;
+  status: string;
+  techTags: string[];
+  githubUrl?: string;
+  liveUrl?: string;
+}
+const { title, tagline, description, cover, accent, status, techTags, githubUrl, liveUrl } = Astro.props;
+---
+<BaseLayout title={`${title} — Tu Nombre`} description={description}>
+  <article class="project-page" style={`--accent:${accent}`}>
+    <a href="/proyectos" class="back-link">← Volver a proyectos</a>
+
+    <header class="project-hero">
+      <div class="hero-text">
+        <span class="status-badge">{status}</span>
+        <h1>{title}</h1>
+        <p class="tagline">{tagline}</p>
+        <div class="tags">
+          {techTags.map(t => <span class="tech-tag">{t}</span>)}
+        </div>
+        <div class="actions">
+          {githubUrl && <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="btn-secondary">GitHub</a>}
+          {liveUrl && <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="btn-primary">Ver demo</a>}
+        </div>
+      </div>
+      <img src={cover} alt={title} class="hero-cover" />
+    </header>
+
+    <div class="project-body">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style lang="scss">
+  .project-page { padding-block: 2rem 4rem; }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text);
+    opacity: 0.65;
+    text-decoration: none;
+    &:hover { opacity: 1; color: var(--color-accent); }
+  }
+
+  .project-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    margin-bottom: 3rem;
+    @media (max-width: 760px) { grid-template-columns: 1fr; }
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    margin-bottom: 1rem;
+  }
+
+  h1 { margin: 0 0 0.6rem; font-size: 2.1rem; }
+  .tagline { margin: 0 0 1.25rem; opacity: 0.75; font-size: 1rem; line-height: 1.5; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .tech-tag { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 999px; background: var(--color-border); opacity: 0.9; }
+
+  .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .btn-primary, .btn-secondary {
+    display: inline-block; padding: 0.55rem 1.2rem; border-radius: 0.4rem;
+    text-decoration: none; font-size: 0.85rem; font-weight: 600;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+  }
+  .btn-primary { background: var(--accent); color: #fff; &:hover { opacity: 0.85; } }
+  .btn-secondary { border: 1px solid var(--color-border); color: var(--color-text); &:hover { border-color: var(--accent); } }
+
+  .hero-cover {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-border);
+  }
+
+  // :global() es necesario porque este contenido llega por <slot />,
+  // escrito en la página del proyecto, no aquí — sin esto, estas reglas no aplicarían.
+  .project-body {
+    max-width: 68ch;
+    line-height: 1.7;
+
+    :global(h2) { margin-top: 2.5rem; margin-bottom: 1rem; font-size: 1.4rem; }
+    :global(h3) { margin-top: 2rem; margin-bottom: 0.75rem; font-size: 1.1rem; }
+    :global(p) { margin: 0 0 1rem; opacity: 0.85; }
+    :global(ul), :global(ol) { margin: 0 0 1rem; padding-left: 1.3rem; opacity: 0.85; }
+    :global(img) { max-width: 100%; border-radius: 0.6rem; margin-block: 1.5rem; border: 1px solid var(--color-border); }
+    :global(code) { background: var(--color-border); padding: 0.15rem 0.4rem; border-radius: 0.3rem; font-size: 0.85em; }
+    :global(pre) { background: #050506; padding: 1rem 1.25rem; border-radius: 0.6rem; overflow-x: auto; }
+    :global(pre code) { background: none; padding: 0; }
+  }
+</style>
