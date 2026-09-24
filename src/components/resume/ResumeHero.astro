@@ -2,7 +2,6 @@
 import { profile } from '../../data/resume';
 ---
 <section class="resume-hero">
-  <img src={profile.photo} alt={profile.fullName} class="avatar" />
   <div class="hero-text">
     <h1>{profile.fullName}</h1>
     <p class="role">{profile.role}</p>
@@ -13,33 +12,71 @@ import { profile } from '../../data/resume';
       <a href="/contacto" class="btn-secondary">Contactarme</a>
     </div>
   </div>
+
+  <div class="photo-wrap">
+    <img src={profile.photo} alt={profile.fullName} class="avatar" />
+  </div>
 </section>
 
 <style lang="scss">
   .resume-hero {
-    display: flex;
-    gap: 2rem;
+    display: grid;
+    grid-template-columns: 1fr minmax(280px, 440px);
+    gap: 4rem;
     align-items: center;
-    padding-block: 3rem 2rem;
-    flex-wrap: wrap;
+    padding-block: 4rem 3rem;
+
+    @media (max-width: 800px) {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding-block: 2rem;
+    }
   }
+
+  .photo-wrap {
+    position: relative;
+    width: 100%;
+
+    @media (max-width: 800px) {
+      order: -1;            // en móvil la foto va arriba
+      max-width: 360px;
+      margin-inline: auto;
+    }
+
+    // marco desplazado hacia adentro (evita scroll horizontal)
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      transform: translate(-14px, 14px);
+      border: 2px solid var(--color-accent);
+      border-radius: 1rem;
+      z-index: 0;
+    }
+  }
+
   .avatar {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
-    border: 2px solid var(--color-border);
-    flex-shrink: 0;
+    object-position: center top; // mantiene la cara visible
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -20px rgba(0, 0, 0, 0.6);
   }
-  .hero-text { flex: 1; min-width: 240px; }
-  h1 { margin: 0 0 0.25rem; font-size: 2rem; }
-  .role { margin: 0 0 0.75rem; color: var(--color-accent); font-weight: 600; }
-  .summary { margin: 0 0 0.5rem; opacity: 0.8; max-width: 55ch; line-height: 1.6; }
-  .location { margin: 0 0 1.25rem; font-size: 0.85rem; opacity: 0.6; }
+
+  .hero-text { min-width: 0; }
+  h1 { margin: 0 0 0.35rem; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.1; }
+  .role { margin: 0 0 1rem; color: var(--color-accent); font-weight: 600; font-size: 1.15rem; }
+  .summary { margin: 0 0 0.75rem; opacity: 0.8; max-width: 55ch; line-height: 1.7; }
+  .location { margin: 0 0 1.5rem; font-size: 0.85rem; opacity: 0.6; }
   .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
   .btn-primary, .btn-secondary {
     display: inline-block;
-    padding: 0.6rem 1.3rem;
+    padding: 0.7rem 1.5rem;
     border-radius: 0.4rem;
     text-decoration: none;
     font-size: 0.9rem;

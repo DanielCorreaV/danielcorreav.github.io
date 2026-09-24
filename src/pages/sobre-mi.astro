@@ -33,9 +33,17 @@ import { profile, experience, education, skillGroups, languages, certifications,
   </section>
 
   <section class="section working-style">
-    <h2>Cómo trabajo</h2>
-    <p>{workingStyle}</p>
-  </section>
+  <div class="working-grid">
+    <div class="working-text">
+      <h2>Cómo trabajo</h2>
+      <p>{workingStyle}</p>
+    </div>
+
+    <div class="working-logo">
+      <img src={profile.logo} alt={`Logo de ${profile.fullName}`} />
+    </div>
+  </div>
+</section>
 </BaseLayout>
 
 <style lang="scss">
@@ -45,4 +53,35 @@ import { profile, experience, education, skillGroups, languages, certifications,
     h2 { margin: 0 0 1.5rem; }
   }
   .working-style p { opacity: 0.8; line-height: 1.7; max-width: 60ch; }
+
+  .working-style p { opacity: 0.8; line-height: 1.7; max-width: 60ch; }
+
+.working-grid {
+  display: grid;
+  grid-template-columns: 1fr minmax(200px, 360px);
+  gap: 4rem;
+  align-items: center;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.working-logo {
+  display: flex;
+  justify-content: center;
+
+  img {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    object-fit: contain;
+  }
+
+  @media (max-width: 800px) {
+    img { max-width: 200px; }
+  }
+}
 </style>
