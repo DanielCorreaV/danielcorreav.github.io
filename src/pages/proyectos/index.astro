@@ -30,6 +30,7 @@ const statusTagOptions = Object.entries(statusLabels).map(([value, label]) => ({
           title={p.title}
           tagline={p.tagline}
           tag={p.techTags[0] ?? ''}
+          cover ={p.cover}
           accent={p.accent}
           href={p.href ?? p.githubUrl ?? '#'}
           tags={[...p.techTags.map(t => t.toLowerCase()), p.status, ...p.classifications].join(',')}

@@ -7,12 +7,21 @@ interface Props {
   accent: string;
   href: string;
   tags?: string;
+  cover?: string;
 }
-const { index, title, tagline, tag, accent, href, tags } = Astro.props;
+const { index, title, tagline, tag, accent, href, tags, cover } = Astro.props;
 const num = String(index).padStart(2, '0');
 ---
-<a class="project-card" href={href} style={`--accent: ${accent};`} data-project-tags={tags}>
-  <div class="glow"></div>
+<a
+  class:list={['project-card', { 'has-cover': cover }]}
+  href={href}
+  style={`--accent: ${accent};`}
+  data-project-tags={tags}
+>
+  {cover
+    ? <img src={cover} alt={`Portada de ${title}`} class="cover" loading="lazy" decoding="async" />
+    : <div class="glow"></div>}
+  <div class="shade"></div>
   <span class="index">{num}</span>
   <span class="tag">{tag}</span>
   <div class="footer">
@@ -34,16 +43,31 @@ const num = String(index).padStart(2, '0');
     text-decoration: none;
     color: #fff;
     isolation: isolate;
-    transition: transform 0.25s ease, border-color 0.25s ease;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 
     &:hover {
       transform: translateY(-4px);
       border-color: var(--accent);
+      box-shadow: 0 20px 40px -20px var(--accent);
       .glow { opacity: 0.85; transform: scale(1.1); }
+      .cover { transform: scale(1.06); }
       .link { opacity: 1; transform: translateX(0); }
     }
   }
 
+  // imagen de portada
+  .cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    transition: transform 0.5s ease;
+  }
+
+  // brillo de respaldo cuando no hay portada
   .glow {
     position: absolute;
     inset: -30%;
@@ -56,14 +80,30 @@ const num = String(index).padStart(2, '0');
     z-index: 0;
   }
 
+  // oscurece arriba y abajo para que el texto se lea sobre cualquier imagen
+  .shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.55) 0%,
+      transparent 25%,
+      transparent 45%,
+      rgba(0, 0, 0, 0.88) 100%
+    );
+  }
+
   .index {
     position: absolute;
     top: 1rem;
     right: 1.1rem;
     font-size: 0.85rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.6);
-    z-index: 1;
+    color: rgba(255, 255, 255, 0.75);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    z-index: 2;
   }
 
   .tag {
@@ -73,20 +113,20 @@ const num = String(index).padStart(2, '0');
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.6);
-    z-index: 1;
+    color: rgba(255, 255, 255, 0.75);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    z-index: 2;
   }
 
   .footer {
     position: absolute;
     inset-inline: 0;
     bottom: 0;
-    z-index: 1;
+    z-index: 2;
     padding: 1.25rem;
-    background: linear-gradient(to top, rgba(0,0,0,0.75) 20%, transparent 100%);
 
     h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
-    p { margin: 0; font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); }
+    p { margin: 0; font-size: 0.85rem; color: rgba(255, 255, 255, 0.78); }
 
     .link {
       display: inline-block;
@@ -98,5 +138,10 @@ const num = String(index).padStart(2, '0');
       transform: translateX(-4px);
       transition: opacity 0.25s ease, transform 0.25s ease;
     }
+  }
+
+  // en pantallas táctiles no hay hover: el enlace se ve siempre
+  @media (hover: none) {
+    .footer .link { opacity: 1; transform: none; }
   }
 </style>
