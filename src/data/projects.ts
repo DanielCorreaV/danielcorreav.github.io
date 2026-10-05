@@ -23,6 +23,7 @@ export const statusLabels: Record<ProjectStatus, string> = {
 };
 
 export const projects: Project[] = [
+  //Destacados
   {
     slug: "Siplac",
     title: "SIPLAC",
@@ -66,6 +67,8 @@ export const projects: Project[] = [
     href: "/proyectos/chafeji",
     githubUrl: "",
   },
+
+  //personales
   {
     slug: "domain",
     title: "Domain Chafeishon",
@@ -78,6 +81,34 @@ export const projects: Project[] = [
     accent: "#ff8a3d",
     cover: "",
     href: "/proyectos/domain",
+    githubUrl: "",
+  },
+  {
+    slug: "sloth-sentinel-web",
+    title: "Sloth-sentinel-web",
+    tagline: "Portal web de Sloth Sentinel",
+    description:
+      "Es una paina orientada a la organización de tareas con un estilo RPG",
+    techTags: ["Svelte"],
+    status: "completado",
+    classifications: ["personal"],
+    accent: "#6f5d4f",
+    cover: "",
+    href: "",
+    githubUrl: "",
+  },
+  {
+    slug: "sloth-sentinel-extension",
+    title: "Sloth-sentinel-extension",
+    tagline: "Extensión complementaria",
+    description:
+      "Es una extension orientada a complementar y expandir las posibilidades del portal we, ofreciendo una mejor experiencia.",
+    techTags: ["JavaScript"],
+    status: "en-progreso",
+    classifications: ["personal"],
+    accent: "#6f5d4f",
+    cover: "",
+    href: "",
     githubUrl: "",
   },
   {
@@ -94,6 +125,9 @@ export const projects: Project[] = [
     href: "",
     githubUrl: "",
   },
+
+  //practica
+
   //   {
   //     slug: "clon-trello",
   //     title: "Clon de Trello",

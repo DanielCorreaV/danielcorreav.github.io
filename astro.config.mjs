@@ -11,18 +11,11 @@ export default defineConfig({
     },
   },
   integrations: [icon()],
+
   vite: {
     server: {
       watch: {
-        ignored: [
-          "**/hiberfil.sys",
-          "**/pagefile.sys",
-          "**/swapfile.sys",
-          "**/DumpStack.log.tmp",
-          "**/DumpStack.log.cbn",
-          "**/System Volume Information/**",
-          "**/$RECYCLE.BIN/**",
-        ],
+        ignored: ["**/node_modules/**", "**/.git/**", "C:/*"],
       },
     },
   },
