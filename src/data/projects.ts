@@ -10,7 +10,7 @@ export interface Project {
   status: ProjectStatus;
   classifications: ProjectClassification[];
   accent: string;
-  cover: string;
+  cover?: string;
   href?: string;
   githubUrl?: string;
   liveUrl?: string;

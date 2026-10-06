@@ -1,12 +1,16 @@
 ---
+import GeneratedCover from './GeneratedCover.astro';
+
 interface Props {
-  title: string; description: string; cover: string;
+  title: string; description: string; cover?: string;
   techTags: string[]; status: string; classifications: string[]; githubUrl: string; liveUrl?: string;
 }
 const { title, description, cover, techTags, status, classifications, githubUrl, liveUrl } = Astro.props;
 ---
 <article class="practice-card" data-project-tags={[...techTags.map(t => t.toLowerCase()), status, ...classifications].join(',')}>
-  <img src={cover} alt={title} loading="lazy" />
+  {cover
+     ? <img src={cover} alt={title} loading="lazy" />
+     : <div class="generated-wrapper"><GeneratedCover accent="#7c5cff" label={techTags[0] ?? ''} label={title} seed={title} /></div>}
   <div class="body">
     <h3>{title}</h3>
     <p>{description}</p>
@@ -25,6 +29,7 @@ const { title, description, cover, techTags, status, classifications, githubUrl,
     display: flex; gap: 1rem; padding: 1rem;
     border: 1px solid var(--color-border); border-radius: 0.6rem;
     img { width: 120px; height: 90px; object-fit: cover; border-radius: 0.4rem; flex-shrink: 0; }
+    .generated-wrapper { width: 120px; height: 90px; border-radius: 0.4rem; overflow: hidden; flex-shrink: 0; }
     .body { flex: 1; min-width: 0; h3 { margin: 0 0 0.3rem; font-size: 1rem; } p { margin: 0 0 0.6rem; font-size: 0.85rem; opacity: 0.75; } }
     .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.6rem; }
     .tech-tag { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--color-border); opacity: 0.85; }

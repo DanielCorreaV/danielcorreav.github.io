@@ -1,10 +1,12 @@
 ---
+import GeneratedCover from './GeneratedCover.astro';
+
 interface CarouselProject {
   title: string;
   tagline: string;
   description: string;
   accent: string;
-  cover: string;
+  cover?: string;
   href: string;
   techTags: string[];
   statusLabel: string;
@@ -30,7 +32,7 @@ const first = projects[0];
             {page.map((p, i) => {
               const globalIndex = pageIndex * PAGE_SIZE + i;
               return (
-                <li class="carousel-item" data-project-tags={[...p.techTags.map(t => t.toLowerCase())].join(',')}>
+                <li class="carousel-item">
                   <button
                     type="button"
                     class:list={['project-btn', { selected: globalIndex === 0 }]}
@@ -41,9 +43,10 @@ const first = projects[0];
                     data-tags={p.techTags.join(',')}
                     data-status={p.statusLabel}
                     data-href={p.href}
-                    data-cover={p.cover}
                   >
-                    <img src={p.cover} alt={p.title} loading="lazy" />
+                    {p.cover
+                      ? <img src={p.cover} alt={p.title} loading="lazy" />
+                      : <GeneratedCover accent={p.accent} label={p.title} seed={p.title} />}
                     <div class="info">
                       <h3>{p.title}</h3>
                       <p>{p.tagline}</p>
@@ -71,7 +74,11 @@ const first = projects[0];
   </div>
 
   <aside class="project-panel">
-    <img id="panel-cover" src={first?.cover} alt="" />
+    <div id="panel-cover-slot" class="panel-cover-slot">
+      {first && (first.cover
+        ? <img src={first.cover} alt={first.title} />
+        : <GeneratedCover accent={first.accent} label={first.title} seed={first.title} />)}
+    </div>
     <span id="panel-status" class="panel-status">{first?.statusLabel}</span>
     <h3 id="panel-title">{first?.title}</h3>
     <p id="panel-description">{first?.description}</p>
@@ -80,17 +87,33 @@ const first = projects[0];
     </div>
     <a id="panel-link" class="panel-cta" href={first?.href}>Ver info →</a>
   </aside>
+
+  <!--
+    Plantillas ocultas: una copia pre-renderizada de la portada de cada proyecto
+    (imagen real o banner generado). El JS clona de aquí en vez de intentar
+    construir un GeneratedCover desde cero en el navegador, cosa que no puede hacer.
+  -->
+  <div class="cover-templates" hidden aria-hidden="true">
+    {projects.map((p, i) => (
+      <div class="cover-template" data-global-index={i}>
+        {p.cover
+          ? <img src={p.cover} alt={p.title} />
+          : <GeneratedCover accent={p.accent} label={p.title} seed={p.title} />}
+      </div>
+    ))}
+  </div>
 </div>
 
 <script>
-   document.querySelectorAll<HTMLElement>('.carousel-shell').forEach((shell) => {
+  document.querySelectorAll<HTMLElement>('.carousel-shell').forEach((shell) => {
     const prevBtn = shell.querySelector<HTMLButtonElement>('.carousel-btn.prev')!;
     const nextBtn = shell.querySelector<HTMLButtonElement>('.carousel-btn.next')!;
     const pageEls = Array.from(shell.querySelectorAll<HTMLElement>('.carousel-page'));
     const dots = Array.from(shell.querySelectorAll<HTMLButtonElement>('.dot'));
     const projectBtns = Array.from(shell.querySelectorAll<HTMLButtonElement>('.project-btn'));
+    const coverTemplates = Array.from(shell.querySelectorAll<HTMLElement>('.cover-template'));
 
-    const panelCover = shell.querySelector<HTMLImageElement>('#panel-cover')!;
+    const panelCoverSlot = shell.querySelector<HTMLElement>('#panel-cover-slot')!;
     const panelStatus = shell.querySelector<HTMLElement>('#panel-status')!;
     const panelTitle = shell.querySelector<HTMLElement>('#panel-title')!;
     const panelDescription = shell.querySelector<HTMLElement>('#panel-description')!;
@@ -98,58 +121,71 @@ const first = projects[0];
     const panelLink = shell.querySelector<HTMLAnchorElement>('#panel-link')!;
 
     let currentPage = 0;
-   const PAGE_SIZE_JS = 3; // debe igualar PAGE_SIZE del frontmatter
-   let currentProjectIndex = 0;
-   let intervalId: ReturnType<typeof setInterval> | null = null;
-   const AUTOPLAY_MS = 10_000;
-   const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-   function goToPage(index: number) {
-     currentPage = Math.max(0, Math.min(index, pageEls.length - 1));
-     pageEls.forEach((el, i) => el.classList.toggle('active', i === currentPage));
-     dots.forEach((d, i) => d.classList.toggle('active', i === currentPage));
-     prevBtn.disabled = currentPage === 0;
-     nextBtn.disabled = currentPage === pageEls.length - 1;
-   }
-   function selectProject(btn: HTMLButtonElement) {
-     projectBtns.forEach(b => b.classList.remove('selected'));
-     btn.classList.add('selected');
-     currentProjectIndex = Number(btn.dataset.globalIndex ?? 0);
-     panelCover.src = btn.dataset.cover ?? '';
-     panelStatus.textContent = btn.dataset.status ?? '';
-     panelTitle.textContent = btn.dataset.title ?? '';
-     panelDescription.textContent = btn.dataset.description ?? '';
-     panelLink.href = btn.dataset.href ?? '#';
-     const tags = (btn.dataset.tags ?? '').split(',').filter(Boolean);
-     panelTags.innerHTML = tags.map(t => `<span class="tech-tag">${t}</span>`).join('');
-   }
-   function advance() {
-     const nextIndex = (currentProjectIndex + 1) % projectBtns.length; // loop al final
-     const nextPage = Math.floor(nextIndex / PAGE_SIZE_JS);
-     if (nextPage !== currentPage) goToPage(nextPage);
-     selectProject(projectBtns[nextIndex]);
-   }
+    const PAGE_SIZE_JS = 3;
+    let currentProjectIndex = 0;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+    const AUTOPLAY_MS = 10_000;
+    const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-   function startAutoplay() {
-     if (prefersReducedMotion || projectBtns.length <= 1) return;
-     stopAutoplay();
-     intervalId = setInterval(advance, AUTOPLAY_MS);
-   }
+    function goToPage(index: number) {
+      currentPage = Math.max(0, Math.min(index, pageEls.length - 1));
+      pageEls.forEach((el, i) => el.classList.toggle('active', i === currentPage));
+      dots.forEach((d, i) => d.classList.toggle('active', i === currentPage));
+      prevBtn.disabled = currentPage === 0;
+      nextBtn.disabled = currentPage === pageEls.length - 1;
+    }
 
-   function stopAutoplay() {
-     if (intervalId !== null) {
-       clearInterval(intervalId);
-       intervalId = null;
-     }
-   }
-   prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
-   nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
-   dots.forEach(dot => dot.addEventListener('click', () => goToPage(Number(dot.dataset.pageIndex))));
-   projectBtns.forEach(btn => btn.addEventListener('click', () => selectProject(btn)));
+    function selectProject(btn: HTMLButtonElement) {
+      projectBtns.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      currentProjectIndex = Number(btn.dataset.globalIndex ?? 0);
 
-   shell.addEventListener('mouseenter', stopAutoplay);
-   shell.addEventListener('mouseleave', startAutoplay);
-   goToPage(0);
-   startAutoplay();
+      const template = coverTemplates[currentProjectIndex];
+      if (template) {
+        panelCoverSlot.replaceChildren(
+          ...Array.from(template.children).map(child => child.cloneNode(true) as Element)
+        );
+      }
+
+      panelStatus.textContent = btn.dataset.status ?? '';
+      panelTitle.textContent = btn.dataset.title ?? '';
+      panelDescription.textContent = btn.dataset.description ?? '';
+      panelLink.href = btn.dataset.href ?? '#';
+
+      const tags = (btn.dataset.tags ?? '').split(',').filter(Boolean);
+      panelTags.innerHTML = tags.map(t => `<span class="tech-tag">${t}</span>`).join('');
+    }
+
+    function advance() {
+      const nextIndex = (currentProjectIndex + 1) % projectBtns.length;
+      const nextPage = Math.floor(nextIndex / PAGE_SIZE_JS);
+      if (nextPage !== currentPage) goToPage(nextPage);
+      selectProject(projectBtns[nextIndex]);
+    }
+
+    function startAutoplay() {
+      if (prefersReducedMotion || projectBtns.length <= 1) return;
+      stopAutoplay();
+      intervalId = setInterval(advance, AUTOPLAY_MS);
+    }
+
+    function stopAutoplay() {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
+    nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
+    dots.forEach(dot => dot.addEventListener('click', () => goToPage(Number(dot.dataset.pageIndex))));
+    projectBtns.forEach(btn => btn.addEventListener('click', () => selectProject(btn)));
+
+    shell.addEventListener('mouseenter', stopAutoplay);
+    shell.addEventListener('mouseleave', startAutoplay);
+
+    goToPage(0);
+    startAutoplay();
   });
 </script>
 
@@ -161,12 +197,7 @@ const first = projects[0];
     align-items: start;
   }
 
-  .carousel-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
+  .carousel-row { display: flex; align-items: center; gap: 0.75rem; }
   .pages-viewport { flex: 1; min-width: 0; }
 
   .carousel-page {
@@ -240,9 +271,15 @@ const first = projects[0];
     position: sticky;
     top: 5rem;
 
-    img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 0.5rem; margin-bottom: 0.85rem; }
     h3 { margin: 0 0 0.5rem; font-size: 1.1rem; }
     p { margin: 0 0 0.85rem; font-size: 0.85rem; opacity: 0.75; line-height: 1.5; }
+  }
+
+  .panel-cover-slot {
+    margin-bottom: 0.85rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    :global(img) { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
   }
 
   .panel-status {
