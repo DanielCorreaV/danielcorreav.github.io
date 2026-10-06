@@ -1,39 +1,84 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactIconLink from '../components/contact/ContactIconLink.astro';
+import ContactForm from '../components/contact/ContactForm.astro';
 import { contactLinks } from '../data/contactLinks';
+import { availabilityStatus, helpBlurb, responseTimeNote } from '../data/contactInfo';
 ---
-<BaseLayout title="Contacto — Daniel Correa Vega" description="Encuéntrame en LinkedIn, GitHub o escríbeme por correo.">
-  <section class="contact-section">
-    <h1>Hablemos</h1>
-    <p>Estas son las formas más rápidas de encontrarme.</p>
-    <div class="contact-grid">
-      {contactLinks.map((link) => (
-        <ContactIconLink
-          label={link.label}
-          icon={link.icon}
-          href={link.href}
-          accent={link.accent}
-        />
-      ))}
-    </div>
+<BaseLayout title="Contacto — Daniel Correa Vega" description="Hablemos sobre tu próximo proyecto.">
+  <section class="contact-page">
+    <header class="contact-header">
+      <h1>Hablemos</h1>
+      <p class="lead">Estas son las formas más rápidas de encontrarme.</p>
+      <span class:list={['status-badge', { available: availabilityStatus.isAvailable }]}>
+        <span class="status-dot"></span>
+        {availabilityStatus.label}
+      </span>
+    </header>
+
+    <section class="blurb">
+      <h2>{helpBlurb.title}</h2>
+      <ul>
+        {helpBlurb.items.map(item => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="icons-section">
+      <h2>Encuéntrame en</h2>
+      <div class="contact-grid">
+        {contactLinks.map((link) => (
+          <ContactIconLink label={link.label} icon={link.icon} href={link.href} accent={link.accent} />
+        ))}
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h2>O escríbeme directo</h2>
+      <ContactForm />
+      <p class="response-note">{responseTimeNote}</p>
+    </section>
   </section>
 </BaseLayout>
 
 <style lang="scss">
-  .contact-section {
-    padding-block: 3rem 4rem;
+  .contact-page { padding-block: 3rem 4rem; display: flex; flex-direction: column; gap: 3rem; }
+
+  .contact-header {
     text-align: center;
-
     h1 { margin: 0 0 0.5rem; font-size: 2rem; }
-    p { opacity: 0.7; margin: 0 auto 2.5rem; max-width: 32ch; }
+    .lead { opacity: 0.7; margin: 0 auto 1.25rem; max-width: 32ch; }
   }
 
-  .contact-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1.25rem;
-    max-width: 40rem;
-    margin-inline: auto;
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.8rem; padding: 0.35rem 0.85rem; border-radius: 999px;
+    border: 1px solid var(--color-border); opacity: 0.8;
+
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-border); }
+
+    &.available {
+      border-color: #4fd8a8; color: #4fd8a8;
+      .status-dot { background: #4fd8a8; box-shadow: 0 0 0 3px rgba(79, 216, 168, 0.2); }
+    }
   }
+
+  h2 { margin: 0 0 1rem; font-size: 1.1rem; text-align: center; }
+
+  .blurb {
+    max-width: 36rem; margin-inline: auto; text-align: center;
+    ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    li { font-size: 0.9rem; opacity: 0.8; padding: 0.5rem 0.75rem; border: 1px solid var(--color-border); border-radius: 0.5rem; }
+  }
+
+  .icons-section .contact-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.25rem; max-width: 40rem; margin-inline: auto;
+  }
+
+  .form-section {
+    max-width: 32rem; margin-inline: auto; width: 100%;
+    padding-top: 2rem; border-top: 1px solid var(--color-border);
+  }
+
+  .response-note { margin-top: 0.75rem; font-size: 0.8rem; opacity: 0.55; }
 </style>

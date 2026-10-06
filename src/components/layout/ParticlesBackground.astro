@@ -1,0 +1,124 @@
+---
+interface Props {
+  density?: number;        // partículas por cada 12,000px² de pantalla
+  maxParticles?: number;
+  connectDistance?: number; // distancia máxima para dibujar línea entre partículas
+}
+const { density = 1, maxParticles = 70, connectDistance = 130 } = Astro.props;
+---
+<canvas
+  id="particles-bg"
+  data-density={density}
+  data-max={maxParticles}
+  data-connect={connectDistance}
+  aria-hidden="true"
+></canvas>
+
+<script>
+  const canvas = document.getElementById('particles-bg') as HTMLCanvasElement | null;
+  if (canvas && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const ctx = canvas.getContext('2d')!;
+    const density = Number(canvas.dataset.density);
+    const maxParticles = Number(canvas.dataset.max);
+    const connectDistance = Number(canvas.dataset.connect);
+
+    let particles: { x: number; y: number; vx: number; vy: number }[] = [];
+    let accentColor = '#7c5cff';
+    let width = 0;
+    let height = 0;
+    let rafId: number | null = null;
+
+    function readAccentColor() {
+      accentColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-accent')
+        .trim() || accentColor;
+    }
+
+    function hexToRgb(hex: string) {
+      const m = hex.replace('#', '');
+      const bigint = parseInt(m.length === 3 ? m.split('').map(c => c + c).join('') : m, 16);
+      return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+    }
+
+    function resize() {
+      width = canvas!.width = window.innerWidth;
+      height = canvas!.height = window.innerHeight;
+      const count = Math.min(maxParticles, Math.floor((width * height) / 12000) * density);
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+      }));
+    }
+
+    function tick() {
+      const { r, g, b } = hexToRgb(accentColor);
+      ctx.clearRect(0, 0, width, height);
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.6, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.5)`;
+        ctx.fill();
+      }
+
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < connectDistance) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${0.12 * (1 - dist / connectDistance)})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function start() {
+      if (rafId === null) rafId = requestAnimationFrame(tick);
+    }
+    function stop() {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    }
+
+    readAccentColor();
+    resize();
+    start();
+
+    window.addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', () => {
+      document.hidden ? stop() : start();
+    });
+
+    // Vuelve a leer el color de acento cuando cambia el tema (data-theme en <html>)
+    new MutationObserver(readAccentColor).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+  }
+</script>
+
+<style>
+  #particles-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+</style>

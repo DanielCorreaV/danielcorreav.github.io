@@ -1,0 +1,106 @@
+---
+import { web3formsAccessKey } from '../../data/contactInfo';
+---
+<form id="contact-form" class="contact-form">
+  <input type="hidden" name="access_key" value={web3formsAccessKey} />
+  <input type="hidden" name="subject" value="Nuevo mensaje desde tu portafolio" />
+  <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" />
+
+  <div class="field">
+    <label for="name">Nombre</label>
+    <input type="text" id="name" name="name" required autocomplete="name" />
+  </div>
+
+  <div class="field">
+    <label for="email">Correo</label>
+    <input type="email" id="email" name="email" required autocomplete="email" />
+  </div>
+
+  <div class="field">
+    <label for="message">Mensaje</label>
+    <textarea id="message" name="message" rows="5" required></textarea>
+  </div>
+
+  <button type="submit" id="submit-btn">Enviar mensaje</button>
+  <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+</form>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+  const statusEl = document.getElementById('form-status');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!submitBtn || !statusEl) return;
+
+    const payload = Object.fromEntries(new FormData(form).entries());
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando…';
+    statusEl.textContent = '';
+    statusEl.className = 'form-status';
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        statusEl.textContent = '¡Mensaje enviado! Te responderé pronto.';
+        statusEl.classList.add('success');
+        form.reset();
+      } else {
+        throw new Error(result.message || 'Algo salió mal');
+      }
+    } catch {
+      statusEl.textContent = 'No se pudo enviar. Intenta de nuevo o escríbeme directo por correo.';
+      statusEl.classList.add('error');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Enviar mensaje';
+    }
+  });
+</script>
+
+<style lang="scss">
+  .contact-form { display: flex; flex-direction: column; gap: 1.1rem; }
+  .botcheck { display: none; }
+  .field {
+    display: flex; flex-direction: column; gap: 0.4rem;
+    label { font-size: 0.85rem; opacity: 0.75; }
+    input, textarea {
+      font: inherit;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 0.4rem;
+      padding: 0.6rem 0.75rem;
+      color: var(--color-text);
+      resize: vertical;
+      transition: border-color 0.2s ease;
+      &:focus { outline: none; border-color: var(--color-accent); }
+    }
+  }
+  button[type="submit"] {
+    align-self: flex-start;
+    padding: 0.65rem 1.4rem;
+    border-radius: 0.4rem;
+    border: none;
+    background: var(--color-accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    &:hover:not(:disabled) { opacity: 0.85; }
+    &:disabled { opacity: 0.6; cursor: default; }
+  }
+  .form-status {
+    font-size: 0.85rem; margin: 0; min-height: 1.2em;
+    &.success { color: #4fd8a8; }
+    &.error { color: #ff6b6b; }
+  }
+</style>
