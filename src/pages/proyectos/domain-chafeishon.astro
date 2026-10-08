@@ -1,0 +1,59 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects, statusLabels } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'domain-chafeishon')!;
+---
+<ProjectLayout
+  title={project.title}
+  tagline={project.tagline}
+  description={project.description}
+  cover={project.cover ?? ''}
+  accent={project.accent}
+  status={statusLabels[project.status]}
+  techTags={project.techTags}
+  githubUrl={project.githubUrl}
+  liveUrl={project.liveUrl}
+>
+  <h2>¿Qué es domain-chafeishon?</h2>
+  <p>
+    domain-chafeishon es una extensión de navegador que permite modificar el CSS
+    de las páginas web e inyectar código JavaScript en ellas. Da la libertad de
+    transformar los entornos que uno visita, de la forma que uno desee.
+  </p>
+
+  <h2>Qué permite hacer</h2>
+  <ul>
+    <li>Modificar el CSS de cualquier página.</li>
+    <li>Inyectar código JS para alterar su comportamiento.</li>
+    <li>Importar y exportar configuraciones para compartir estilos con otras personas.</li>
+  </ul>
+
+  <p>
+    El sistema de importación y exportación abre la puerta a algo más grande que
+    una modificación personal: la posibilidad de cambiar entre todos cómo vemos
+    las páginas.
+  </p>
+
+  <aside class="notice">
+    <h3>Una herramienta para quien sabe lo que hace</h3>
+    <p>
+      Esta extensión está pensada para personas con conocimientos de programación y
+      desarrollo web. Cada usuario es responsable de lo que inyecta en sus páginas.
+      Es una herramienta, y lo que se haga con ella depende de quien la use.
+    </p>
+  </aside>
+</ProjectLayout>
+
+<style>
+  .notice {
+    max-width: 68ch;
+    margin-top: 2.5rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0.5rem;
+  }
+  .notice h3 { margin-top: 0; }
+  .notice p { margin-bottom: 0; }
+</style>

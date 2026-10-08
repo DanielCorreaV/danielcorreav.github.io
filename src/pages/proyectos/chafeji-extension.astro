@@ -1,0 +1,39 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects, statusLabels } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'chafeji-extension')!;
+---
+<ProjectLayout
+  title={project.title}
+  tagline={project.tagline}
+  description={project.description}
+  cover={project.cover ?? ''}
+  accent={project.accent}
+  status={statusLabels[project.status]}
+  techTags={project.techTags}
+  githubUrl={project.githubUrl}
+  liveUrl={project.liveUrl}
+>
+  <h2>¿Qué es chafeji.extension?</h2>
+  <p>
+    chafeji.extension es una extensión de navegador estilo shimeji: una pequeña
+    mascota que, en lugar de quedarse en un solo lugar, se mueve por todo el
+    ecosistema del navegador y convive con lo que el usuario hace.
+  </p>
+
+  <h2>Qué hace</h2>
+  <ul>
+    <li>Se mueve por todo el ecosistema del navegador.</li>
+    <li>Aprende y actúa conforme a sus estadísticas.</li>
+    <li>Se muestra en la pestaña actual del usuario e interactúa con la ventana.</li>
+    <li>El usuario también puede interactuar con ella.</li>
+  </ul>
+
+  <h2>Estado actual</h2>
+  <p>
+    La extensión sigue en desarrollo. Ya hay una demo disponible: un espacio que
+    muestra una interacción básica con la shimeji. Al ser un proyecto personal,
+    avanza a su propio ritmo.
+  </p>
+</ProjectLayout>

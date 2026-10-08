@@ -1,0 +1,99 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects, statusLabels } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'sloth-sentinel-web')!;
+
+const mechanics = [
+  { title: 'Misiones diarias', text: 'Organizadas por categorías como salud, mente, productividad y aprendizaje.' },
+  { title: 'XP y oro', text: 'Cada misión otorga experiencia y oro según su dificultad.' },
+  { title: 'Rachas con escudos', text: 'Los escudos perdonan un día fallido para que una mala jornada no borre tu progreso.' },
+  { title: 'Cofre diario', text: 'Una recompensa aleatoria cada día, como motivo extra para volver.' },
+  { title: 'Logros', text: 'Hitos que reconocen la constancia a largo plazo.' },
+  { title: 'Tienda propia', text: 'Tú defines las recompensas, y las pagas con el oro que ganas.' },
+];
+---
+<ProjectLayout
+  title={project.title}
+  tagline={project.tagline}
+  description={project.description}
+  cover={project.cover ?? ''}
+  accent={project.accent}
+  status={statusLabels[project.status]}
+  techTags={project.techTags}
+  githubUrl={project.githubUrl}
+  liveUrl={project.liveUrl}
+>
+  <h2>¿Qué es Sloth Sentinel?</h2>
+  <p>
+    Sloth Sentinel es un gestor de hábitos y tareas personales disfrazado de juego
+    de aventura. En lugar de una lista de pendientes fría, conviertes tus hábitos
+    en misiones, ganas experiencia y oro al cumplirlas, y avanzas como si fueras
+    el héroe de tu propia historia.
+  </p>
+
+  <h2>Cómo funciona</h2>
+  <div class="mechanics">
+    {mechanics.map(m => (
+      <div class="mechanic">
+        <h3>{m.title}</h3>
+        <p>{m.text}</p>
+      </div>
+    ))}
+  </div>
+
+  <h2>La tienda de recompensas propias</h2>
+  <p>
+    Lo más particular del sistema es su tienda. La aplicación no decide qué te
+    mereces: eres tú quien define tus recompensas reales, como una pizza con amigos,
+    una tarde de películas o una sesión extra de videojuegos. Es una "economía de
+    fichas" que la persona arma para sí misma, más cercana a una herramienta de
+    auto-coaching que a un simple checklist.
+  </p>
+
+  <h2>Un perezoso como centinela</h2>
+  <p>
+    El guardián que vigila tus misiones es un perezoso, el animal más asociado a la
+    pereza que existe. Es una ironía cariñosa: tu defensa contra la procrastinación
+    es el espíritu animal de la procrastinación.
+  </p>
+  <p>
+    Ese tono se refleja en todo el diseño. No hay presión agresiva ni culpa por
+    fallar un día: los escudos de racha perdonan, hay un bono de consolación cuando
+    ya tienes el máximo, y cuando se acaba el tiempo de una misión el mensaje es que
+    aún puedes completarla. Está pensada para quien se siente poco productivo o
+    le cuesta la constancia.
+  </p>
+
+  <blockquote class="pull-quote">
+    Hasta un perezoso puede ser el héroe de su propia historia si se presenta todos los días.
+  </blockquote>
+</ProjectLayout>
+
+<style>
+  .mechanics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0 2rem;
+  }
+  .mechanics .mechanic {
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    transition: border-color 0.2s ease;
+  }
+  .mechanics .mechanic:hover { border-color: var(--accent); }
+  .mechanics .mechanic h3 { margin: 0 0 0.4rem; font-size: 1rem; }
+  .mechanics .mechanic p { margin: 0; max-width: none; font-size: 0.85rem; }
+
+  .pull-quote {
+    max-width: 68ch;
+    margin: 2.5rem 0 0;
+    padding: 0.5rem 0 0.5rem 1.25rem;
+    border-left: 3px solid var(--accent);
+    font-size: 1.15rem;
+    font-style: italic;
+    line-height: 1.5;
+  }
+</style>

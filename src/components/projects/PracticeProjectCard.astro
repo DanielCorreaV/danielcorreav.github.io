@@ -3,7 +3,7 @@ import GeneratedCover from './GeneratedCover.astro';
 
 interface Props {
   title: string; description: string; cover?: string;
-  techTags: string[]; status: string; classifications: string[]; githubUrl: string; liveUrl?: string;
+  techTags: string[]; status: string; classifications: string[]; githubUrl?: string; liveUrl?: string;
 }
 const { title, description, cover, techTags, status, classifications, githubUrl, liveUrl } = Astro.props;
 ---
@@ -18,7 +18,7 @@ const { title, description, cover, techTags, status, classifications, githubUrl,
       {techTags.map(t => <span class="tech-tag">{t}</span>)}
     </div>
     <div class="links">
-      <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="link-btn">GitHub</a>
+      {githubUrl && <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="link-btn">GitHub</a>}
       {liveUrl && <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="link-btn demo">Demo</a>}
     </div>
   </div>

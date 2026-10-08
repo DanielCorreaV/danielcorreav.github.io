@@ -1,11 +1,11 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-
+import GeneratedCover from '../components/projects/GeneratedCover.astro';
 interface Props {
   title: string;
   tagline: string;
   description: string;
-  cover: string;
+  cover?: string;
   accent: string;
   status: string;
   techTags: string[];
@@ -28,10 +28,12 @@ const { title, tagline, description, cover, accent, status, techTags, githubUrl,
         </div>
         <div class="actions">
           {githubUrl && <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="btn-secondary">GitHub</a>}
-          {liveUrl && <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="btn-primary">Ver demo</a>}
+          {liveUrl && <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="btn-primary">Probar demo</a>}
         </div>
       </div>
-      <img src={cover} alt={title} class="hero-cover" />
+      {cover
+       ? <img src={cover} alt={title} class="hero-cover" />
+       : <div class="hero-cover"><GeneratedCover accent={accent} label={title} seed={title} /></div>}
     </header>
 
     <div class="project-body">
@@ -95,21 +97,22 @@ const { title, tagline, description, cover, accent, status, techTags, githubUrl,
     object-fit: cover;
     border-radius: 0.75rem;
     border: 1px solid var(--color-border);
+    overflow: hidden;
   }
 
   // :global() es necesario porque este contenido llega por <slot />,
   // escrito en la página del proyecto, no aquí — sin esto, estas reglas no aplicarían.
   .project-body {
-    max-width: 68ch;
-    line-height: 1.7;
+      line-height: 1.7;
 
-    :global(h2) { margin-top: 2.5rem; margin-bottom: 1rem; font-size: 1.4rem; }
-    :global(h3) { margin-top: 2rem; margin-bottom: 0.75rem; font-size: 1.1rem; }
-    :global(p) { margin: 0 0 1rem; opacity: 0.85; }
-    :global(ul), :global(ol) { margin: 0 0 1rem; padding-left: 1.3rem; opacity: 0.85; }
-    :global(img) { max-width: 100%; border-radius: 0.6rem; margin-block: 1.5rem; border: 1px solid var(--color-border); }
-    :global(code) { background: var(--color-border); padding: 0.15rem 0.4rem; border-radius: 0.3rem; font-size: 0.85em; }
-    :global(pre) { background: #050506; padding: 1rem 1.25rem; border-radius: 0.6rem; overflow-x: auto; }
-    :global(pre code) { background: none; padding: 0; }
-  }
+     :global(h2) { max-width: 68ch; margin-top: 2.5rem; margin-bottom: 1rem; font-size: 1.4rem; }
+     :global(h3) { max-width: 68ch; margin-top: 2rem; margin-bottom: 0.75rem; font-size: 1.1rem; }
+     :global(p) { max-width: 68ch; margin: 0 0 1rem; opacity: 0.85; }
+     :global(ul), :global(ol) { max-width: 68ch; margin: 0 0 1rem; padding-left: 1.3rem; opacity: 0.85; }
+     :global(.doc-download) { max-width: 68ch; }
+     :global(img) { max-width: min(100%, 68ch); border-radius: 0.6rem; margin-block: 1.5rem; border: 1px solid var(--color-border); }
+     :global(code) { background: var(--color-border); padding: 0.15rem 0.4rem; border-radius: 0.3rem; font-size: 0.85em; }
+     :global(pre) { max-width: 68ch; background: #050506; padding: 1rem 1.25rem; border-radius: 0.6rem; overflow-x: auto; }
+      :global(pre code) { background: none; padding: 0; }
+    }
 </style>

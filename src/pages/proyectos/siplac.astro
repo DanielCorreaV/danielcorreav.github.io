@@ -1,36 +1,53 @@
 ---
 import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import ScreenshotCarousel from '../../components/projects/ScreenshotCarousel.astro';
 import { projects, statusLabels } from '../../data/projects';
+import DocumentDownloadButton from '../../components/projects/DocumentDownloadButton.astro';
 
-const project = projects.find(p => p.slug === 'Siplac')!;
+const project = projects.find(p => p.slug === 'siplac')!;
+
+const screenshots = [
+  { src: '/images/projects/siplac/login.png', alt: 'Login' },
+  { src: '/images/projects/siplac/dashboard.png', alt: 'Panel principal de SIPLAC' },
+  { src: '/images/projects/siplac/factors.png', alt: 'Gestión de factores' },
+  { src: '/images/projects/siplac/models.png', alt: 'Gestión de modelos' },
+  { src: '/images/projects/siplac/sidebar.png', alt: 'modulos' },
+  { src: '/images/projects/siplac/surveys.png', alt: 'Módulo de encuestas' },
+];
+
+const documentUrl = '/documents/siplac-documento-tecnico.pdf'; // sube el PDF real a public/documents/
 ---
 <ProjectLayout
   title={project.title}
   tagline={project.tagline}
   description={project.description}
-  cover={project.cover}
+  cover={project.cover ?? ''}
   accent={project.accent}
   status={statusLabels[project.status]}
   techTags={project.techTags}
   githubUrl={project.githubUrl}
   liveUrl={project.liveUrl}
 >
-  <h2>El problema</h2>
+  <h2>¿Qué es SIPLAC?</h2>
   <p>
-    Describe aquí qué problema resolvía este proyecto o qué te motivó a construirlo.
-    Este contenido es 100% libre — cada página de proyecto puede tener secciones
-    completamente distintas a las demás.
+    SIPLAC es una herramienta orientada al proceso de autoevaluación institucional.
+    Busca ser una solución moderna para que las instituciones de educación superior
+    cuenten con un sistema centralizado donde crear y gestionar sus procesos de
+    autoevaluación — incluyendo indicadores, características, factores y modelos —
+    acompañados de encuestas y documentos de soporte.
   </p>
 
-  <h2>Cómo lo resolví</h2>
-  <p>
-    Explica tu enfoque, decisiones técnicas clave, o algún reto particular que enfrentaste.
-  </p>
+  <h2>Funcionalidades clave</h2>
+  <ul>
+    <li>Creación y gestión de indicadores, características, factores y modelos de autoevaluación.</li>
+    <li>Módulo de encuestas integrado al proceso de evaluación.</li>
+    <li>Gestión documental asociada a cada proceso.</li>
+    <li>Control total de usuarios para el encargado de planeación institucional.</li>
+  </ul>
 
-  <img src="/images/projects/proyecto-uno-detalle.jpg" alt="Captura del proyecto" />
+  <DocumentDownloadButton href={documentUrl} label="Descargar documento técnico (PDF)" />
 
-  <h2>Lo que aprendí</h2>
-  <p>
-    Cierre reflexivo (opcional) — qué harías distinto, o qué sigue para este proyecto.
-  </p>
+  <h2>Capturas de pantalla</h2>
+  <ScreenshotCarousel screenshots={screenshots} />
 </ProjectLayout>
+

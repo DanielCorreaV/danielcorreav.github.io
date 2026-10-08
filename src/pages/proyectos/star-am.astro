@@ -1,0 +1,42 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import DocumentDownloadButton from '../../components/projects/DocumentDownloadButton.astro';
+import { projects, statusLabels } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'star-am')!;
+const manualUrl = '/documents/star-am-manual-usuario.pdf'; // sube el PDF real a public/documents/
+---
+<ProjectLayout
+  title={project.title}
+  tagline={project.tagline}
+  description={project.description}
+  cover={project.cover ?? ''}
+  accent={project.accent}
+  status={statusLabels[project.status]}
+  techTags={project.techTags}
+  githubUrl={project.githubUrl}
+  liveUrl={project.liveUrl}
+>
+  <h2>¿Qué es STAR⭐AM?</h2>
+  <p>
+    STAR⭐AM nace para sintetizar el trabajo docente en una única herramienta.
+    En vez de dispersar la organización entre múltiples sistemas, centraliza las
+    organizaciones para las que trabaja un docente, las asignaturas que imparte en
+    cada una, y las clases que tiene dentro de esas asignaturas.
+  </p>
+
+  <h2>Se adapta al contexto educativo</h2>
+  <p>
+    El sistema está pensado para funcionar en distintos entornos docentes — desde
+    instituciones de educación primaria y bachillerato, hasta cursos independientes,
+    tutorías particulares, e incluso clases a nivel universitario.
+  </p>
+
+  <h2>Estado actual</h2>
+  <p>
+    STAR⭐AM sigue en fase de desarrollo activo. Ya existe una versión demo disponible
+    para probar el flujo del sistema en un entorno de uso local, sin exponer datos reales.
+  </p>
+
+  <DocumentDownloadButton href={manualUrl} label="Ver manual de usuario (PDF)" />
+</ProjectLayout>

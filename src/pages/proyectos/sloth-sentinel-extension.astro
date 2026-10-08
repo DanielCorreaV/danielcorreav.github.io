@@ -1,0 +1,70 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects, statusLabels } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'sloth-sentinel-extension')!;
+const webProject = projects.find(p => p.slug === 'sloth-sentinel-web')!;
+---
+<ProjectLayout
+  title={project.title}
+  tagline={project.tagline}
+  description={project.description}
+  cover={project.cover ?? ''}
+  accent={project.accent}
+  status={statusLabels[project.status]}
+  techTags={project.techTags}
+  githubUrl={project.githubUrl}
+  liveUrl={project.liveUrl}
+>
+  <h2>¿Qué es Sloth Sentinel Extension?</h2>
+  <p>
+    Es la extensión de navegador de Sloth Sentinel. Amplía las capacidades de la
+    aplicación para que ya no tengas que ir a la página cada vez que quieras
+    cumplir una misión.
+  </p>
+
+  <h2>Cómo funciona</h2>
+  <p>
+    Funciona de forma simple, como un puente entre la página y el usuario. Te permite
+    cumplir tus misiones en cualquier parte y en cualquier momento, sin interrumpir
+    lo que estás haciendo en el navegador.
+  </p>
+
+  <a href={webProject.href} class="ecosystem">
+    <span class="ecosystem-label">Parte del ecosistema Sloth Sentinel</span>
+    <span class="ecosystem-title">{webProject.title}</span>
+    <span class="ecosystem-text">{webProject.tagline}</span>
+  </a>
+
+  <h2>Estado actual</h2>
+  <p>
+    La extensión sigue en desarrollo y todavía no se lanza. Más adelante se
+    incorporarán funciones adicionales.
+  </p>
+</ProjectLayout>
+
+<style>
+  .ecosystem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-width: 68ch;
+    margin: 2rem 0;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: var(--color-text);
+    transition: border-color 0.2s ease;
+  }
+  .ecosystem:hover { border-color: var(--accent); }
+  .ecosystem .ecosystem-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.55;
+  }
+  .ecosystem .ecosystem-title { font-weight: 700; }
+  .ecosystem .ecosystem-text { font-size: 0.85rem; opacity: 0.75; }
+</style>

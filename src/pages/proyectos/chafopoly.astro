@@ -1,0 +1,67 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects, statusLabels } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'chafopoly')!;
+---
+<ProjectLayout
+  title={project.title}
+  tagline={project.tagline}
+  description={project.description}
+  cover={project.cover}
+  accent={project.accent}
+  status={statusLabels[project.status]}
+  techTags={project.techTags}
+  githubUrl={project.githubUrl}
+  liveUrl={project.liveUrl}
+>
+  <h2>¿Qué es Chafopoly?</h2>
+  <p>
+    Chafopoly es un juego de mesa por turnos online, con la estética de Monopoly y
+    Morbopoly. Nació como un experimento, y se toma a sí mismo con humor: busca ser
+    más una parodia de un juego que un juego en sí.
+  </p>
+
+  <h2>Cómo se juega</h2>
+  <p>
+    La jugabilidad es simple. Hay un sistema de turnos y un tablero en forma de
+    carrera. Entre el inicio y la meta hay casillas, y cada una tiene un efecto:
+    puede ser una penitencia o una recompensa. Gana quien tenga más suerte y llegue
+    al final con más puntos.
+  </p>
+
+  <h2>Por qué existe</h2>
+  <p>
+    Lo hice mientras practicaba Angular, Firebase y las políticas de seguridad de
+    este último. El estado del juego vive en una base de datos Firestore con reglas
+    restrictivas para el backend, así que además de divertirme, fue una buena forma
+    de entender cómo proteger los datos en una aplicación con varios jugadores.
+  </p>
+
+  <aside class="notice">
+    <h3>Un experimento, no un producto</h3>
+    <p>
+      Chafopoly no pretende ser un producto serio. Fue una práctica poco seria pero
+      divertida de hacer.
+    </p>
+  </aside>
+
+  <h2>Estado actual</h2>
+  <p>
+    El proyecto está archivado. Hay una versión desplegada disponible para jugar. Si
+    algún día tengo ganas de mejorarlo lo haré, pero es algo incierto.
+  </p>
+</ProjectLayout>
+
+<style>
+  .notice {
+    max-width: 68ch;
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0.5rem;
+  }
+  .notice h3 { margin-top: 0; }
+  .notice p { margin-bottom: 0; }
+</style>

@@ -25,105 +25,115 @@ export const statusLabels: Record<ProjectStatus, string> = {
 export const projects: Project[] = [
   //Destacados
   {
-    slug: "Siplac",
+    slug: "siplac",
     title: "SIPLAC",
     tagline:
-      "Sistema de Informacion Para la Planeación y Aseguramiento de la Calidad",
+      "Sistema de Información para la Planeación y el Aseguramiento de la Calidad.",
     description:
-      "Aplicación universitaria desarrollada como proyecto de grado para comprometer las labores oficiales de un proceso de autoevaluación universitario. ",
-    techTags: ["NestJS", "React", "TypeScript"],
-    status: "completado",
-    classifications: ["destacado"],
-    accent: "#4f8cff",
-    cover: "/images/projects/siplac/siplacposter.jpg",
+      "Plataforma centralizada para que instituciones de educación superior gestionen sus procesos de autoevaluación institucional: indicadores, características, factores, modelos, encuestas y documentos.",
+    techTags: ["Angular", "TypeScript"], // ajusta al stack real
+    status: "en-progreso", // ajusta si ya está completado
+    classifications: ["destacado"], // agrega 'personal' si aplica
+    accent: "#1a1db5",
+    cover: "/images/projects/siplac/siplacposter.jpg", // sube una captura representativa aquí
     href: "/proyectos/siplac",
-    githubUrl: "",
-    liveUrl: "https://proyecto-uno.tudominio.com",
+    githubUrl: undefined, // agrega si el repo es público
+    liveUrl: undefined, // agrega si hay demo desplegada
   },
   {
-    slug: "staram",
-    title: "Star⭐AM",
-    tagline: "App de administracion de aula para docentes.",
-    description: "Descripción más larga.",
-    techTags: ["Ionic", "Tauri"],
-    status: "en-progreso",
-    classifications: ["destacado", "personal"],
-    accent: "#61ff4f",
-    cover: "/images/projects/staram/starposter.jpg",
-    href: "/proyectos/staram",
-    githubUrl: "https://github.com/DanielCorreaV/staram-demo",
-  },
-  {
-    slug: "chafeji",
-    title: "Chafeji-extension",
-    tagline: "Extension de shimeji para el navegador",
+    slug: "star-am",
+    title: "STAR⭐AM",
+    tagline: "Una única herramienta para organizar toda tu labor docente.",
     description:
-      "Imagina a un shimeji moviendose por el escritorio, que sea autonomo y te acompañe en tu viaje de navegar por internet.",
-    techTags: ["JavaScript"],
+      "Programa diseñado para sintetizar el trabajo del docente: organizaciones, asignaturas y clases, todo centralizado en un solo lugar, adaptable desde primaria y bachillerato hasta cursos, tutorías y clases universitarias.",
+    techTags: ["Angular", "TypeScript"], // ajusta al stack real
     status: "en-progreso",
     classifications: ["personal", "destacado"],
-    accent: "#1a41ed",
+    accent: "#f5a623",
+    cover: "/images/projects/staram/starposter.jpg",
+    href: "/proyectos/star-am",
+    githubUrl: "https://github.com/DanielCorreaV/staram-demo", // ajusta al repo real
+    liveUrl: "https://danielcorreav.github.io/staram-demo/", // ajusta al link real de la demo
+  },
+
+  {
+    slug: "chafeji-extension",
+    title: "chafeji.extension",
+    tagline: "Una shimeji que vive en tu navegador.",
+    description:
+      "Extensión estilo shimeji: un personaje capaz de moverse por todo el ecosistema del navegador, aprender y actuar según sus estadísticas, e interactuar con la ventana y con el usuario.",
+    techTags: ["TypeScript"], // ajusta al stack real
+    status: "en-progreso",
+    classifications: ["personal", "destacado"], // agrega 'destacado' si quieres que salga también en el Home
+    accent: "#ff7eb6",
     cover: "/images/projects/chafeji/chafejiposter.jpg",
-    href: "/proyectos/chafeji",
-    githubUrl: "",
+    href: "/proyectos/chafeji-extension",
+    githubUrl: undefined, // agrega si el repo es público
+    liveUrl: "", // ajusta al link real de la demo
   },
 
   //personales
   {
-    slug: "domain",
-    title: "Domain Chafeishon",
-    tagline: "Extensión Para modificar dominios",
+    slug: "domain-chafeishon",
+    title: "domain-chafeishon",
+    tagline: "Modifica el CSS e inyecta JS en cualquier página que visites.",
     description:
-      "Esta extension te permite modificar las paginas a tu antojo, puedes injectar codigo css y js a tu antojo.",
-    techTags: ["JavaScript"],
-    status: "completado",
-    classifications: ["personal"],
-    accent: "#ff8a3d",
+      "Extensión que permite modificar el CSS de las páginas e inyectar código JavaScript, con un sistema de importación y exportación para compartir estilos. Pensada para quienes saben de programación y desarrollo web.",
+    techTags: ["JavaScript", "CSS"], // ajusta al stack real
+    status: "en-progreso", // ajusta si ya está completado
+    classifications: ["personal"], // ajusta si corresponde otra clasificación
+    accent: "#38bdf8",
     cover: "",
-    href: "/proyectos/domain",
-    githubUrl: "",
+    href: "/proyectos/domain-chafeishon",
+    githubUrl: undefined,
+    liveUrl: undefined,
   },
   {
     slug: "sloth-sentinel-web",
-    title: "Sloth-sentinel-web",
-    tagline: "Portal web de Sloth Sentinel",
+    title: "Sloth Sentinel Web",
+    tagline:
+      "Un gestor de hábitos con alma de RPG y un perezoso como guardián.",
     description:
-      "Es una paina orientada a la organización de tareas con un estilo RPG",
-    techTags: ["Svelte"],
-    status: "completado",
-    classifications: ["personal"],
-    accent: "#6f5d4f",
+      "Gestor de hábitos y tareas personales con mecánicas de RPG: misiones diarias, XP, oro, rachas con escudos, cofres y una tienda donde tú defines tus propias recompensas reales.",
+    techTags: ["Angular", "TypeScript"], // ajusta al stack real
+    status: "en-progreso", // ajusta si ya está completado
+    classifications: ["personal"], // agrega 'destacado' si quieres que salga en el Home
+    accent: "#7bc96f",
     cover: "",
-    href: "",
-    githubUrl: "",
+    href: "/proyectos/sloth-sentinel-web",
+    githubUrl: undefined,
+    liveUrl: undefined,
   },
   {
     slug: "sloth-sentinel-extension",
-    title: "Sloth-sentinel-extension",
-    tagline: "Extensión complementaria",
+    title: "Sloth Sentinel Extension",
+    tagline:
+      "Cumple tus misiones desde cualquier pestaña, sin volver a la página.",
     description:
-      "Es una extension orientada a complementar y expandir las posibilidades del portal we, ofreciendo una mejor experiencia.",
-    techTags: ["JavaScript"],
+      "Extensión de navegador que funciona como puente entre Sloth Sentinel Web y el usuario, permitiéndole cumplir misiones en cualquier parte y momento.",
+    techTags: ["TypeScript", "Vite"], // ajusta al stack real
     status: "en-progreso",
     classifications: ["personal"],
-    accent: "#6f5d4f",
+    accent: "#4fb89a",
     cover: "",
-    href: "",
-    githubUrl: "",
+    href: "/proyectos/sloth-sentinel-extension",
+    githubUrl: undefined,
+    liveUrl: undefined,
   },
   {
-    slug: "chafopoli",
-    title: "Chafopoli",
-    tagline: "Chafopoli: la copia de la copia",
+    slug: "chafopoly",
+    title: "Chafopoly",
+    tagline: "Un juego de mesa por turnos online que es más parodia que juego.",
     description:
-      "Es un juego que hice para probar y practicar con firebase console, no pretende ser tan elaborado o divertido, solo es un experimento.",
-    techTags: ["Angular", "Ionic", "NestJs", "Firebase"],
+      "Experimento hecho para practicar Angular, Firebase y sus políticas de seguridad: un juego de mesa por turnos con estética de Monopoly y Morbopoly, tablero en forma de carrera y casillas con efectos, penitencias y recompensas.",
+    techTags: ["Angular", "Firebase"],
     status: "archivado",
     classifications: ["personal", "practica"],
-    accent: "#f7f0eb",
-    cover: "",
-    href: "",
-    githubUrl: "",
+    accent: "#e0483a",
+    // sin cover: se genera un banner automático
+    href: "/proyectos/chafopoly",
+    githubUrl: undefined,
+    liveUrl: "https://chafopoly.tudominio.com", // ajusta al link real de la versión desplegada
   },
 
   //practica
