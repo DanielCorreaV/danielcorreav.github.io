@@ -6,12 +6,11 @@ const allDocs = (await getCollection('methodology', ({ data }) => !data.draft))
   .sort((a, b) => a.data.order - b.data.order);
 const firstDoc = allDocs[0];
 ---
-<BaseLayout title="Metodología — Tu Nombre" description="Una metodología de enseñanza especializada en sistemas.">
+<BaseLayout title="Pilares" description="Una metodología de enseñanza especializada en sistemas.">
   <section class="intro">
-    <h1>Nombre de tu metodología</h1>
+    <h1>Pilares</h1>
     <p class="lead">
-      Descripción breve de qué es, qué problema resuelve, y para quién está pensada.
-      Reemplaza este texto por tu presentación real.
+      [insertar descrición]
     </p>
     {firstDoc && <a href={`/metodologia/${firstDoc.id}`} class="btn-primary">Empezar a leer →</a>}
   </section>
