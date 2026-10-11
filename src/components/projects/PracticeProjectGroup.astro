@@ -1,0 +1,130 @@
+---
+import GeneratedCover from './GeneratedCover.astro';
+import type { Project } from '../../data/projects';
+
+interface Props {
+  title: string;
+  description: string;
+  accent: string;
+  members: Project[];
+}
+const { title, description, accent, members } = Astro.props;
+
+const tagsOf = (m: Project) => [...m.techTags.map(t => t.toLowerCase()), m.status, ...m.classifications];
+
+// Las etiquetas del grupo son la unión de las de sus miembros: el grupo
+// coincide con un filtro si al menos uno de sus repos coincide.
+const groupTags = [...new Set(members.flatMap(tagsOf))].join(',');
+const groupTech = [...new Set(members.flatMap(m => m.techTags))];
+---
+<details class="practice-group" style={`--accent:${accent}`} data-project-tags={groupTags} data-project-group>
+  <summary>
+    <div class="generated-wrapper">
+      <GeneratedCover accent={accent} label={title} seed={title} />
+    </div>
+    <div class="summary-body">
+      <h3>{title}</h3>
+      <span class="desc">{description}</span>
+      <span class="tags">
+        {groupTech.map(t => <span class="tech-tag">{t}</span>)}
+      </span>
+      <span class="count" data-group-count>{members.length} repositorios</span>
+    </div>
+    <span class="chevron" aria-hidden="true">▾</span>
+  </summary>
+
+  <ul class="members">
+    {members.map(m => (
+      <li class="member" data-project-tags={tagsOf(m).join(',')}>
+        <div class="member-info">
+          <h4>{m.title}</h4>
+          <p>{m.description}</p>
+          <div class="tags">
+            {m.techTags.map(t => <span class="tech-tag">{t}</span>)}
+          </div>
+        </div>
+        <div class="member-links">
+          {m.githubUrl && <a href={m.githubUrl} target="_blank" rel="noopener noreferrer" class="link-btn">GitHub</a>}
+          {m.liveUrl && <a href={m.liveUrl} target="_blank" rel="noopener noreferrer" class="link-btn demo">Demo</a>}
+        </div>
+      </li>
+    ))}
+  </ul>
+</details>
+
+<style lang="scss">
+  .practice-group {
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    transition: border-color 0.2s ease;
+
+    &:hover, &[open] { border-color: var(--accent); }
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker { display: none; }
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 0.6rem; }
+  }
+
+  .generated-wrapper {
+    width: 120px;
+    height: 90px;
+    border-radius: 0.4rem;
+    overflow: hidden;
+    flex-shrink: 0;
+    :global(.generated-cover) { height: 100%; aspect-ratio: auto; padding: 0.5rem; }
+  }
+
+  .summary-body {
+    flex: 1;
+    min-width: 0;
+    h3 { margin: 0 0 0.3rem; font-size: 1rem; }
+    .desc { display: block; margin-bottom: 0.6rem; font-size: 0.85rem; opacity: 0.75; }
+    .count { display: block; margin-top: 0.6rem; font-size: 0.75rem; color: var(--accent); font-weight: 600; }
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tech-tag { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--color-border); opacity: 0.85; }
+
+  .chevron {
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: transform 0.2s ease;
+  }
+  .practice-group[open] .chevron { transform: rotate(180deg); }
+
+  .members { list-style: none; margin: 0; padding: 0 1rem 0.5rem; }
+  .member {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .member-info {
+    min-width: 0;
+    h4 { margin: 0 0 0.25rem; font-size: 0.95rem; }
+    p { margin: 0 0 0.5rem; font-size: 0.85rem; opacity: 0.75; }
+  }
+  .member-links { display: flex; gap: 0.75rem; flex-shrink: 0; }
+  .link-btn {
+    font-size: 0.8rem; font-weight: 600; color: var(--color-text);
+    text-decoration: none; border-bottom: 1px solid var(--color-text);
+    &.demo { color: var(--color-accent); border-color: var(--color-accent); }
+  }
+
+  @media (max-width: 480px) {
+    summary { flex-direction: column; align-items: stretch; }
+    .generated-wrapper { width: 100%; height: 140px; }
+    .chevron { align-self: flex-end; }
+    .member { flex-direction: column; }
+  }
+</style>

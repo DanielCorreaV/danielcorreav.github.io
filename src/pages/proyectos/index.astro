@@ -4,11 +4,29 @@ import FeaturedProjectCard from '../../components/projects/FeaturedProjectCard.a
 import ProjectCarousel from '../../components/projects/ProjectCarousel.astro';
 import PracticeProjectCard from '../../components/projects/PracticeProjectCard.astro';
 import TagFilterBar from '../../components/projects/TagFilterBar.astro';
-import { projects, statusLabels } from '../../data/projects';
+import PracticeProjectGroup from '../../components/projects/PracticeProjectGroup.astro';
+import { projects, projectGroups, statusLabels, type Project, type ProjectGroup } from '../../data/projects';
 
 const destacados = projects.filter(p => p.classifications.includes('destacado'));
 const personales = projects.filter(p => p.classifications.includes('personal'));
 const practica = projects.filter(p => p.classifications.includes('practica'));
+
+ type PracticeItem =
+   | { kind: 'project'; project: Project }
+   | { kind: 'group'; meta: ProjectGroup; members: Project[] };
+
+ const practiceItems: PracticeItem[] = [];
+ const seenGroups = new Set<string>();
+ for (const p of practica) {
+   const meta = p.group ? projectGroups[p.group] : undefined;
+   if (!p.group || !meta) {
+     practiceItems.push({ kind: 'project', project: p });
+     continue;
+   }
+   if (seenGroups.has(p.group)) continue;
+   seenGroups.add(p.group);
+   practiceItems.push({ kind: 'group', meta, members: practica.filter(m => m.group === p.group) });
+ }
 
 const techTags = [...new Set(projects.flatMap(p => p.techTags))].sort();
 const statusTagOptions = Object.entries(statusLabels).map(([value, label]) => ({ value, label }));
@@ -64,18 +82,28 @@ const statusTagOptions = Object.entries(statusLabels).map(([value, label]) => ({
       a nivel visual ni de producto.
     </p>
     <div class="practice-list">
-      {practica.map(p => (
-        <PracticeProjectCard
-          title={p.title}
-          description={p.description}
-          cover={p.cover}
-          techTags={p.techTags}
-          status={statusLabels[p.status]}
-          githubUrl={p.githubUrl}
-          classifications={p.classifications}
-          liveUrl={p.liveUrl}
-        />
-      ))}
+      {practiceItems.map(item =>
+       item.kind === 'group' ? (
+         <PracticeProjectGroup
+           title={item.meta.title}
+           description={item.meta.description}
+           accent={item.meta.accent}
+           members={item.members}
+         />
+       ) : (
+         <PracticeProjectCard
+           title={item.project.title}
+           description={item.project.description}
+           cover={item.project.cover}
+           accent={item.project.accent}
+           techTags={item.project.techTags}
+           status={statusLabels[item.project.status]}
+           classifications={item.project.classifications}
+           githubUrl={item.project.githubUrl}
+           liveUrl={item.project.liveUrl}
+         />
+       )
+     )}
     </div>
   </section>
 </BaseLayout>

@@ -39,6 +39,16 @@ const { techTags, statusTags } = Astro.props;
       card.classList.toggle('is-hidden', !matches);
     });
 
+    document.querySelectorAll<HTMLDetailsElement>('details[data-project-group]').forEach(group => {
+     const total = group.querySelectorAll('.member').length;
+     const visible = group.querySelectorAll('.member:not(.is-hidden)').length;
+     const countEl = group.querySelector<HTMLElement>('[data-group-count]');
+     if (countEl) {
+       countEl.textContent = visible === total ? `${total} repositorios` : `${visible} de ${total} repositorios`;
+     }
+     if (active.size > 0 && visible > 0) group.open = true;
+   });
+
     document.querySelectorAll<HTMLElement>('[data-project-section]').forEach(section => {
       const visible = section.querySelectorAll('[data-project-tags]:not(.is-hidden)').length;
       section.classList.toggle('is-empty', visible === 0);

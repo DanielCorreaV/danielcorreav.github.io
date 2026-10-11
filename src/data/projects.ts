@@ -14,12 +14,41 @@ export interface Project {
   href?: string;
   githubUrl?: string;
   liveUrl?: string;
+  group?: string; // id de un grupo en projectGroups; en Práctica se muestra como una sola tarjeta
 }
+
+export interface ProjectGroup {
+  title: string;
+  description: string;
+  accent: string;
+}
+
+export const projectGroups: Record<string, ProjectGroup> = {
+  "url-shortener": {
+    title: "URL Shortener",
+    description:
+      "Acortador de URLs construido como un sistema de microservicios, con la infraestructura definida como código con Terraform para AWS. Cada pieza vive en su propio repositorio.",
+    accent: "#ff9900",
+  },
+};
 
 export const statusLabels: Record<ProjectStatus, string> = {
   completado: "Completado",
   "en-progreso": "En progreso",
   archivado: "Archivado",
+};
+
+const GITHUB_USER = "DanielCorreaV";
+const gh = (repo: string) => `https://github.com/${GITHUB_USER}/${repo}`;
+
+const urlShortenerBase: Pick<
+  Project,
+  "status" | "classifications" | "accent" | "group"
+> = {
+  status: "completado",
+  classifications: ["practica"],
+  accent: "#ff9900",
+  group: "url-shortener",
 };
 
 export const projects: Project[] = [
@@ -138,30 +167,148 @@ export const projects: Project[] = [
 
   //practica
 
-  //   {
-  //     slug: "clon-trello",
-  //     title: "Clon de Trello",
-  //     tagline: "",
-  //     description:
-  //       "Tablero kanban hecho para practicar drag & drop y estado global.",
-  //     techTags: ["Svelte"],
-  //     status: "completado",
-  //     classifications: ["practica", "personal"], // ejemplo de doble clasificación
-  //     accent: "#7c5cff",
-  //     cover: "/images/projects/clon-trello.jpg",
-  //     githubUrl: "https://github.com/tu-usuario/clon-trello",
-  //   },
-  //   {
-  //     slug: "calculadora-rpn",
-  //     title: "Calculadora RPN",
-  //     tagline: "",
-  //     description:
-  //       "Calculadora de notación polaca inversa, ejercicio de estructuras de datos.",
-  //     techTags: ["TypeScript"],
-  //     status: "completado",
-  //     classifications: ["practica"],
-  //     accent: "#ffb020",
-  //     cover: "/images/projects/calculadora-rpn.jpg",
-  //     githubUrl: "https://github.com/tu-usuario/calculadora-rpn",
-  //   },
+  {
+    slug: "a1-sync-ai",
+    title: "A1 Sync AI",
+    tagline: "",
+    description:
+      "Práctica de redes neuronales con Python. Se planteó como un optimizador de despliegue de flota para Transcaribe, usado como pretexto para darle un problema concreto a la IA.",
+    techTags: ["Python", "Redes neuronales"],
+    status: "completado",
+    classifications: ["practica"],
+    accent: "#22d3ee",
+    githubUrl: gh("A1-Sync-AI"),
+  },
+  {
+    ...urlShortenerBase,
+    slug: "url-shortener",
+    title: "URL Shortener",
+    tagline: "",
+    description:
+      "Repositorio principal del acortador de URLs: la infraestructura del sistema definida como código con Terraform para AWS.",
+    techTags: ["Terraform", "AWS"],
+    githubUrl: gh("URL-Shortener"),
+  },
+  {
+    ...urlShortenerBase,
+    slug: "url-shortener-init",
+    title: "URL Shortener · Init",
+    tagline: "",
+    description:
+      "Módulo de inicialización del acortador de URLs: prepara la base sobre la que se despliegan los demás servicios, con Terraform en AWS.",
+    techTags: ["Terraform", "AWS"],
+    githubUrl: gh("URL-Shortener-init"),
+  },
+  {
+    ...urlShortenerBase,
+    slug: "url-shortener-auth",
+    title: "URL Shortener · Auth",
+    tagline: "",
+    description:
+      "Microservicio de autenticación del acortador de URLs, desplegado con Terraform en AWS.",
+    techTags: ["Terraform", "AWS"],
+    githubUrl: gh("URL-Shortener-auth"),
+  },
+  {
+    ...urlShortenerBase,
+    slug: "url-shortener-shortener",
+    title: "URL Shortener · Shortener",
+    tagline: "",
+    description:
+      "Microservicio que acorta las URLs: recibe una dirección larga y genera su versión corta.",
+    techTags: ["JavaScript", "Terraform", "AWS"],
+    githubUrl: gh("URL-Shortener-shortener"),
+  },
+  {
+    ...urlShortenerBase,
+    slug: "url-shortener-redirector",
+    title: "URL Shortener · Redirector",
+    tagline: "",
+    description:
+      "Microservicio que redirige un enlace corto hacia su dirección original, definido con Terraform en AWS.",
+    techTags: ["Terraform", "AWS", "JavaScript"],
+    githubUrl: gh("URL-Shortener-redirector"),
+  },
+  {
+    ...urlShortenerBase,
+    slug: "url-shortener-stats",
+    title: "URL Shortener · Stats",
+    tagline: "",
+    description:
+      "Microservicio de estadísticas del acortador: registra y consulta datos de uso de los enlaces.",
+    techTags: ["JavaScript", "Terraform", "AWS"],
+    githubUrl: gh("URL-Shortener-stats"),
+  },
+  {
+    ...urlShortenerBase,
+    slug: "url-shortener-front-stats",
+    title: "URL Shortener · Front Stats",
+    tagline: "",
+    description:
+      "Interfaz web para consultar las estadísticas de los enlaces acortados.",
+    techTags: ["HTML", "Terraform", "JavaScript"],
+    githubUrl: gh("URL-Shortener-front-stats"),
+  },
+  {
+    ...urlShortenerBase,
+    slug: "url-shortener-front-shorter-redirector",
+    title: "URL Shortener · Front Shortener",
+    tagline: "",
+    description:
+      "Interfaz web del acortador: permite crear enlaces cortos y usarlos para llegar a su destino.",
+    techTags: ["HTML", "Terraform", "JavaScript", "CSS"],
+    githubUrl: gh("URL-Shortener-front-shorter-redirector"),
+  },
+
+  // PIG BANK: descripciones provisionales deducidas del nombre, cuéntame qué hace cada uno
+  {
+    slug: "pig-bank-app",
+    title: "PIG BANK App",
+    tagline: "",
+    description:
+      "Aplicación de práctica desarrollada en TypeScript + Terraform. Forma parte del proyecto PIG BANK, junto con su microservicio de usuarios.",
+    techTags: ["TypeScript", "CSS", "HTML"],
+    status: "completado",
+    classifications: ["practica"],
+    accent: "#f472b6",
+    githubUrl: gh("PIG_BANK_APP"),
+  },
+  {
+    slug: "pig-bank-user-microservice",
+    title: "PIG BANK · Usuarios",
+    tagline: "",
+    description:
+      "Microservicio de usuarios de PIG BANK, con la infraestructura definida en Terraform.",
+    techTags: ["Terraform"],
+    status: "completado",
+    classifications: ["practica"],
+    accent: "#f472b6",
+    githubUrl: gh("PIG_BANK_USER_MICROSERVICE"),
+  },
+
+  {
+    slug: "task-master",
+    title: "Task Master",
+    tagline: "",
+    description:
+      "Gestor de tareas al estilo Jira, creado como pretexto para practicar la conexión de una aplicación propia con Active Directory. Todo el entorno se montó en una máquina virtual con Windows Server, y funciona.",
+    techTags: ["EJS", "Active Directory", "Windows Server"],
+    status: "completado",
+    classifications: ["practica"],
+    accent: "#60a5fa",
+    githubUrl: gh("Task-Master"),
+  },
+  {
+    slug: "safespaceweb",
+    title: "SafeSpace Web",
+    tagline: "",
+    description:
+      "Página sencilla con la temática de una app que no existe, hecha para una tarea de inglés. Sirvió únicamente para practicar frontend.",
+    techTags: ["HTML", "CSS", "javaScript"], // ajusta al stack real
+    status: "completado",
+    classifications: ["practica"],
+    accent: "#a78bfa",
+    githubUrl: gh("safespaceweb"),
+    liveUrl: "https://danielcorreav.github.io/safespaceweb/",
+  },
 ];
