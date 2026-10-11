@@ -14,4 +14,4 @@ export const helpBlurb = {
 
 export const responseTimeNote = "Normalmente respondo en 1–2 días hábiles.";
 
-export const web3formsAccessKey = "ACCESS_KEY_AQUI";
+export const web3formsAccessKey = "1727dec8-9067-428d-ad12-3b5650f72aeb";
