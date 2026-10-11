@@ -1,23 +1,19 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
-import LanguageSwitcher from './LanguageSwitcher.astro';
-import { useTranslations, useTranslatedPath } from '../../i18n/utils';
 
-const lang = (Astro.currentLocale ?? 'es') as 'es' | 'en';
-const t = useTranslations(lang);
-const translatePath = useTranslatedPath(lang);
+
 
 const links = [
-  { href: translatePath('/'), label: t('nav.home') },
-  { href: translatePath('/proyectos'), label: t('nav.projects') },
-  // { href: translatePath('/metodologia'), label: t('nav.methodology') },
-  { href: translatePath('/sobre-mi'), label: t('nav.about') },
-  { href: translatePath('/contacto'), label: t('nav.contact') },
+  { href: '/', label: 'Inicio' },
+  { href: '/proyectos', label: 'Proyectos' },
+  { href: '/metodologia', label: 'Metodología' },
+  { href: '/sobre-mi', label: 'Sobre mí' },
+  { href: '/contacto', label: 'Contacto' },
 ];
 ---
 <header class="site-header">
   <div class="container inner">
-    <a href={translatePath('/')} class="logo">
+    <a href="/" class="logo">
       <img src="/images/dcv-icon.png" alt="Logo de Daniel Correa Vega" class="logo-icon" />
       <span>DANIEL CORREA VEGA</span>
     </a>
@@ -32,7 +28,6 @@ const links = [
       </nav>
 
       <div class="actions">
-        <LanguageSwitcher />
         <ThemeToggle />
       </div>
 

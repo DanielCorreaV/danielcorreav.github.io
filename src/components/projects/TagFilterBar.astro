@@ -53,6 +53,8 @@ const { techTags, statusTags } = Astro.props;
       const visible = section.querySelectorAll('[data-project-tags]:not(.is-hidden)').length;
       section.classList.toggle('is-empty', visible === 0);
     });
+
+    document.dispatchEvent(new CustomEvent('projects:filtered'));
   }
 
   chips.forEach(chip => {

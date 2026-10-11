@@ -70,6 +70,8 @@ const statusTagOptions = Object.entries(statusLabels).map(([value, label]) => ({
         cover: p.cover, href: p.href ?? p.githubUrl ?? '#',
         techTags: p.techTags, status: p.status, classifications: p.classifications,
         description: p.description, statusLabel: statusLabels[p.status],
+        tags: [...p.techTags.map(t => t.toLowerCase()), p.status, ...p.classifications].join(','),
+
       }))}
     />
   </section>

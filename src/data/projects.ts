@@ -30,6 +30,12 @@ export const projectGroups: Record<string, ProjectGroup> = {
       "Acortador de URLs construido como un sistema de microservicios, con la infraestructura definida como código con Terraform para AWS. Cada pieza vive en su propio repositorio.",
     accent: "#ff9900",
   },
+  "pig-bank": {
+    title: "PIG BANK",
+    description:
+      "Proyecto de práctica formado por una aplicación y su microservicio de usuarios, cada uno en su propio repositorio.", // provisional
+    accent: "#f472b6",
+  },
 };
 
 export const statusLabels: Record<ProjectStatus, string> = {
@@ -49,6 +55,16 @@ const urlShortenerBase: Pick<
   classifications: ["practica"],
   accent: "#ff9900",
   group: "url-shortener",
+};
+
+const pigBankBase: Pick<
+  Project,
+  "status" | "classifications" | "accent" | "group"
+> = {
+  status: "completado",
+  classifications: ["practica"],
+  accent: "#f472b6",
+  group: "pig-bank",
 };
 
 export const projects: Project[] = [
@@ -262,27 +278,22 @@ export const projects: Project[] = [
 
   // PIG BANK: descripciones provisionales deducidas del nombre, cuéntame qué hace cada uno
   {
+    ...pigBankBase,
     slug: "pig-bank-app",
-    title: "PIG BANK App",
+    title: "PIG BANK · App",
     tagline: "",
-    description:
-      "Aplicación de práctica desarrollada en TypeScript + Terraform. Forma parte del proyecto PIG BANK, junto con su microservicio de usuarios.",
-    techTags: ["TypeScript", "CSS", "HTML"],
-    status: "completado",
-    classifications: ["practica"],
-    accent: "#f472b6",
+    description: "Aplicación del proyecto, desarrollada en TypeScript.", // provisional
+    techTags: ["TypeScript"],
     githubUrl: gh("PIG_BANK_APP"),
   },
   {
+    ...pigBankBase,
     slug: "pig-bank-user-microservice",
     title: "PIG BANK · Usuarios",
     tagline: "",
     description:
-      "Microservicio de usuarios de PIG BANK, con la infraestructura definida en Terraform.",
+      "Microservicio que gestiona los usuarios del proyecto, con su infraestructura definida como código con Terraform.", // provisional
     techTags: ["Terraform"],
-    status: "completado",
-    classifications: ["practica"],
-    accent: "#f472b6",
     githubUrl: gh("PIG_BANK_USER_MICROSERVICE"),
   },
 

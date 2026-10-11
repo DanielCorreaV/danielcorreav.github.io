@@ -9,34 +9,41 @@ interface CarouselProject {
   cover?: string;
   href: string;
   techTags: string[];
+  status: string;
+  classifications: string[];
   statusLabel: string;
+  tags: string;
 }
-interface Props { projects: CarouselProject[]; }
+
+interface Props { 
+  projects: CarouselProject[]; 
+}
+
 const { projects } = Astro.props;
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 6;
 const pages: CarouselProject[][] = [];
 for (let i = 0; i < projects.length; i += PAGE_SIZE) {
   pages.push(projects.slice(i, i + PAGE_SIZE));
 }
 const first = projects[0];
 ---
-<div class="carousel-shell">
+<div class="carousel-shell" data-page-size={PAGE_SIZE}>
   <div class="carousel-main">
     <div class="carousel-row">
-      <button class="carousel-btn prev" aria-label="Página anterior" data-dir="-1" disabled>‹</button>
+      <button class="carousel-btn prev" aria-label="Página anterior" disabled>‹</button>
 
       <div class="pages-viewport">
         {pages.map((page, pageIndex) => (
-          <ul class:list={['carousel-page', { active: pageIndex === 0 }]} data-page={pageIndex} role="list">
+          <ul class:list={['carousel-page', { active: pageIndex === 0 }]} role="list">
             {page.map((p, i) => {
               const globalIndex = pageIndex * PAGE_SIZE + i;
               return (
-                <li class="carousel-item">
+                <li class="carousel-item" data-project-tags={p.tags}>
                   <button
                     type="button"
-                    class:list={['project-btn', { selected: globalIndex === 0 }]}
-                    style={`--accent:${p.accent}`}
+                    class:list={['project-card', { selected: globalIndex === 0 }]}
+                    style={`--accent: ${p.accent}`}
                     data-global-index={globalIndex}
                     data-title={p.title}
                     data-description={p.description}
@@ -44,12 +51,25 @@ const first = projects[0];
                     data-status={p.statusLabel}
                     data-href={p.href}
                   >
-                    {p.cover
-                      ? <img src={p.cover} alt={p.title} loading="lazy" />
-                      : <GeneratedCover accent={p.accent} label={p.title} seed={p.title} />}
-                    <div class="info">
-                      <h3>{p.title}</h3>
-                      <p>{p.tagline}</p>
+                    <div class="card-media">
+                      {p.cover
+                        ? <img src={p.cover} alt={p.title} loading="lazy" />
+                        : <GeneratedCover accent={p.accent} label={p.title} seed={p.title} />}
+                    </div>
+                    <div class="card-info">
+                      <div class="card-text">
+                        <h3>{p.title}</h3>
+                        <p>{p.tagline}</p>
+                      </div>
+                      <!-- Botón directo individual para cada tarjeta -->
+                      <a 
+                        href={p.href} 
+                        class="card-direct-link" 
+                        title={`Ver detalles de ${p.title}`}
+                        onclick="event.stopPropagation();"
+                      >
+                        <span aria-hidden="true">→</span>
+                      </a>
                     </div>
                   </button>
                 </li>
@@ -59,18 +79,16 @@ const first = projects[0];
         ))}
       </div>
 
-      <button class="carousel-btn next" aria-label="Página siguiente" data-dir="1">›</button>
+      <button class="carousel-btn next" aria-label="Página siguiente" disabled={pages.length <= 1}>›</button>
     </div>
 
-    {pages.length > 1 && (
-      <ul class="carousel-dots" role="tablist">
-        {pages.map((_, i) => (
-          <li>
-            <button class:list={['dot', { active: i === 0 }]} data-page-index={i} aria-label={`Ir a página ${i + 1}`}></button>
-          </li>
-        ))}
-      </ul>
-    )}
+    <ul class:list={['carousel-dots', { 'is-hidden': pages.length <= 1 }]} role="tablist">
+      {pages.map((_, i) => (
+        <li>
+          <button class:list={['dot', { active: i === 0 }]} data-page-index={i} aria-label={`Ir a página ${i + 1}`}></button>
+        </li>
+      ))}
+    </ul>
   </div>
 
   <aside class="project-panel">
@@ -79,20 +97,21 @@ const first = projects[0];
         ? <img src={first.cover} alt={first.title} />
         : <GeneratedCover accent={first.accent} label={first.title} seed={first.title} />)}
     </div>
-    <span id="panel-status" class="panel-status">{first?.statusLabel}</span>
-    <h3 id="panel-title">{first?.title}</h3>
-    <p id="panel-description">{first?.description}</p>
-    <div id="panel-tags" class="panel-tags">
-      {first?.techTags.map(t => <span class="tech-tag">{t}</span>)}
+    <div class="panel-content">
+      <span id="panel-status" class="panel-status">{first?.statusLabel}</span>
+      <h3 id="panel-title">{first?.title}</h3>
+      <p id="panel-description">{first?.description}</p>
+      <div id="panel-tags" class="panel-tags">
+        {first?.techTags.map(t => <span class="tech-tag">{t}</span>)}
+      </div>
+      <a id="panel-link" class="panel-cta" href={first?.href}>
+        Ver información <span aria-hidden="true">→</span>
+      </a>
     </div>
-    <a id="panel-link" class="panel-cta" href={first?.href}>Ver info →</a>
   </aside>
 
-  <!--
-    Plantillas ocultas: una copia pre-renderizada de la portada de cada proyecto
-    (imagen real o banner generado). El JS clona de aquí en vez de intentar
-    construir un GeneratedCover desde cero en el navegador, cosa que no puede hacer.
-  -->
+  <div class="carousel-pool" hidden></div>
+
   <div class="cover-templates" hidden aria-hidden="true">
     {projects.map((p, i) => (
       <div class="cover-template" data-global-index={i}>
@@ -106,11 +125,18 @@ const first = projects[0];
 
 <script>
   document.querySelectorAll<HTMLElement>('.carousel-shell').forEach((shell) => {
+    const PAGE_SIZE = Number(shell.dataset.pageSize) || 6;
+    const AUTOPLAY_MS = 10_000;
+    const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const prevBtn = shell.querySelector<HTMLButtonElement>('.carousel-btn.prev')!;
     const nextBtn = shell.querySelector<HTMLButtonElement>('.carousel-btn.next')!;
     const pageEls = Array.from(shell.querySelectorAll<HTMLElement>('.carousel-page'));
+    const dotsWrap = shell.querySelector<HTMLElement>('.carousel-dots');
     const dots = Array.from(shell.querySelectorAll<HTMLButtonElement>('.dot'));
-    const projectBtns = Array.from(shell.querySelectorAll<HTMLButtonElement>('.project-btn'));
+    const pool = shell.querySelector<HTMLElement>('.carousel-pool')!;
+    const allItems = Array.from(shell.querySelectorAll<HTMLElement>('.carousel-item'));
+    const allBtns = allItems.map(li => li.querySelector<HTMLButtonElement>('.project-card')!);
     const coverTemplates = Array.from(shell.querySelectorAll<HTMLElement>('.cover-template'));
 
     const panelCoverSlot = shell.querySelector<HTMLElement>('#panel-cover-slot')!;
@@ -120,27 +146,26 @@ const first = projects[0];
     const panelTags = shell.querySelector<HTMLElement>('#panel-tags')!;
     const panelLink = shell.querySelector<HTMLAnchorElement>('#panel-link')!;
 
+    let visibleBtns = [...allBtns];
+    let pageCount = pageEls.length;
     let currentPage = 0;
-    const PAGE_SIZE_JS = 3;
-    let currentProjectIndex = 0;
+    let currentIndex = 0;
     let intervalId: ReturnType<typeof setInterval> | null = null;
-    const AUTOPLAY_MS = 10_000;
-    const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function goToPage(index: number) {
-      currentPage = Math.max(0, Math.min(index, pageEls.length - 1));
+      currentPage = Math.max(0, Math.min(index, pageCount - 1));
       pageEls.forEach((el, i) => el.classList.toggle('active', i === currentPage));
       dots.forEach((d, i) => d.classList.toggle('active', i === currentPage));
       prevBtn.disabled = currentPage === 0;
-      nextBtn.disabled = currentPage === pageEls.length - 1;
+      nextBtn.disabled = currentPage >= pageCount - 1;
     }
 
     function selectProject(btn: HTMLButtonElement) {
-      projectBtns.forEach(b => b.classList.remove('selected'));
+      allBtns.forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      currentProjectIndex = Number(btn.dataset.globalIndex ?? 0);
+      currentIndex = Math.max(0, visibleBtns.indexOf(btn));
 
-      const template = coverTemplates[currentProjectIndex];
+      const template = coverTemplates[Number(btn.dataset.globalIndex ?? 0)];
       if (template) {
         panelCoverSlot.replaceChildren(
           ...Array.from(template.children).map(child => child.cloneNode(true) as Element)
@@ -157,16 +182,11 @@ const first = projects[0];
     }
 
     function advance() {
-      const nextIndex = (currentProjectIndex + 1) % projectBtns.length;
-      const nextPage = Math.floor(nextIndex / PAGE_SIZE_JS);
+      if (visibleBtns.length === 0) return;
+      const nextIndex = (currentIndex + 1) % visibleBtns.length;
+      const nextPage = Math.floor(nextIndex / PAGE_SIZE);
       if (nextPage !== currentPage) goToPage(nextPage);
-      selectProject(projectBtns[nextIndex]);
-    }
-
-    function startAutoplay() {
-      if (prefersReducedMotion || projectBtns.length <= 1) return;
-      stopAutoplay();
-      intervalId = setInterval(advance, AUTOPLAY_MS);
+      selectProject(visibleBtns[nextIndex]);
     }
 
     function stopAutoplay() {
@@ -176,13 +196,36 @@ const first = projects[0];
       }
     }
 
+    function startAutoplay() {
+      stopAutoplay();
+      if (prefersReducedMotion || visibleBtns.length <= 1) return;
+      intervalId = setInterval(advance, AUTOPLAY_MS);
+    }
+
+    function rebuild() {
+      allItems.forEach(li => pool.appendChild(li));
+
+      const visible = allItems.filter(li => !li.classList.contains('is-hidden'));
+      visible.forEach((li, i) => pageEls[Math.floor(i / PAGE_SIZE)].appendChild(li));
+      visibleBtns = visible.map(li => li.querySelector<HTMLButtonElement>('.project-card')!);
+
+      pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+      dots.forEach((d, i) => d.parentElement?.classList.toggle('is-hidden', i >= pageCount));
+      dotsWrap?.classList.toggle('is-hidden', pageCount <= 1);
+
+      goToPage(0);
+      if (visibleBtns[0]) selectProject(visibleBtns[0]);
+      startAutoplay();
+    }
+
     prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
     nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
     dots.forEach(dot => dot.addEventListener('click', () => goToPage(Number(dot.dataset.pageIndex))));
-    projectBtns.forEach(btn => btn.addEventListener('click', () => selectProject(btn)));
+    allBtns.forEach(btn => btn.addEventListener('click', () => selectProject(btn)));
 
     shell.addEventListener('mouseenter', stopAutoplay);
     shell.addEventListener('mouseleave', startAutoplay);
+    document.addEventListener('projects:filtered', rebuild);
 
     goToPage(0);
     startAutoplay();
@@ -192,43 +235,140 @@ const first = projects[0];
 <style lang="scss">
   .carousel-shell {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr 340px;
     gap: 1.5rem;
     align-items: start;
   }
 
-  .carousel-row { display: flex; align-items: center; gap: 0.75rem; }
-  .pages-viewport { flex: 1; min-width: 0; }
+  .carousel-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .carousel-row { 
+    display: flex; 
+    align-items: center; 
+    gap: 0.75rem; 
+  }
+
+  .pages-viewport { 
+    flex: 1; 
+    min-width: 0; 
+  }
 
   .carousel-page {
     display: none;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
+    gap: 0.85rem;
     list-style: none;
     margin: 0;
     padding: 0;
     &.active { display: grid; }
   }
 
-  .project-btn {
-    display: block;
+  .project-card {
+    display: flex;
+    flex-direction: column;
     width: 100%;
     text-align: left;
-    background: none;
-    border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
+    background: var(--color-bg-card, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+    border-radius: 0.85rem;
     overflow: hidden;
     cursor: pointer;
     padding: 0;
-    color: var(--color-text);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    color: var(--color-text, #ffffff);
+    transition: all 0.2s ease;
     font: inherit;
+    height: 100%;
 
-    &:hover { border-color: var(--accent); }
-    &.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    &:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
 
-    img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
-    .info { padding: 1rem; h3 { margin: 0 0 0.3rem; font-size: 1rem; } p { margin: 0; font-size: 0.85rem; opacity: 0.7; } }
+    &.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .card-media {
+      width: 100%;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      background: rgba(0, 0, 0, 0.2);
+      
+      img { 
+        width: 100%; 
+        height: 100%;
+        object-fit: cover; 
+        display: block; 
+        transition: transform 0.3s ease;
+      }
+    }
+
+    &:hover .card-media img {
+      transform: scale(1.04);
+    }
+
+    .card-info { 
+      padding: 0.75rem; 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+
+      .card-text {
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+
+      h3 { 
+        margin: 0; 
+        font-size: 0.875rem; 
+        font-weight: 600;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      } 
+      
+      p { 
+        margin: 0; 
+        font-size: 0.75rem; 
+        opacity: 0.65; 
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      } 
+
+      .card-direct-link {
+        flex-shrink: 0;
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+        color: var(--accent, #a78bfa);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--accent, #a78bfa);
+          color: #ffffff;
+          border-color: var(--accent, #a78bfa);
+        }
+      }
+    }
   }
 
   .carousel-btn {
@@ -236,17 +376,25 @@ const first = projects[0];
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 50%;
-    border: 1px solid var(--color-border);
-    background: var(--color-bg);
-    color: var(--color-text);
-    font-size: 1.2rem;
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+    background: var(--color-bg, rgba(20, 20, 25, 0.8));
+    color: var(--color-text, #ffffff);
+    font-size: 1.1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.2s ease, opacity 0.2s ease;
-    &:hover:not(:disabled) { border-color: var(--color-accent); }
-    &:disabled { opacity: 0.3; cursor: default; }
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) { 
+      border-color: var(--accent, var(--color-accent));
+      color: var(--accent, var(--color-accent));
+    }
+    
+    &:disabled { 
+      opacity: 0.2; 
+      cursor: default; 
+    }
   }
 
   .carousel-dots {
@@ -256,64 +404,138 @@ const first = projects[0];
     list-style: none;
     margin: 1rem 0 0;
     padding: 0;
+
+    &.is-hidden { display: none; }
   }
+
   .dot {
-    width: 8px; height: 8px; border-radius: 50%; border: none; padding: 0;
-    background: var(--color-border); cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
-    &.active { background: var(--color-accent); transform: scale(1.35); }
+    width: 7px; 
+    height: 7px; 
+    border-radius: 50%; 
+    border: none; 
+    padding: 0;
+    background: var(--color-border, rgba(255, 255, 255, 0.2)); 
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.active { 
+      background: var(--color-accent, #8b5cf6); 
+      transform: scale(1.3); 
+    }
   }
 
   .project-panel {
-    border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
-    padding: 1.25rem;
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+    border-radius: 1rem;
+    background: var(--color-bg-card, rgba(255, 255, 255, 0.02));
+    overflow: hidden;
     position: sticky;
     top: 5rem;
+    display: flex;
+    flex-direction: column;
 
-    h3 { margin: 0 0 0.5rem; font-size: 1.1rem; }
-    p { margin: 0 0 0.85rem; font-size: 0.85rem; opacity: 0.75; line-height: 1.5; }
+    .panel-content {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    h3 { 
+      margin: 0 0 0.5rem; 
+      font-size: 1.2rem; 
+      font-weight: 700;
+    }
+    
+    p { 
+      margin: 0 0 1rem; 
+      font-size: 0.85rem; 
+      opacity: 0.75; 
+      line-height: 1.5; 
+    }
   }
 
   .panel-cover-slot {
-    margin-bottom: 0.85rem;
-    border-radius: 0.5rem;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    :global(img) { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+    
+    :global(img) { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      display: block; 
+    }
   }
 
   .panel-status {
     display: inline-block;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-accent);
-    border: 1px solid var(--color-accent);
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: var(--color-accent, #a78bfa);
+    border: 1px solid currentColor;
     border-radius: 999px;
-    padding: 0.15rem 0.55rem;
+    padding: 0.2rem 0.6rem;
     margin-bottom: 0.75rem;
   }
 
-  .panel-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
-  .tech-tag { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--color-border); opacity: 0.85; }
+  .panel-tags { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 0.35rem; 
+    margin-bottom: 1.25rem; 
+  }
+
+  .tech-tag { 
+    font-size: 0.7rem; 
+    padding: 0.2rem 0.55rem; 
+    border-radius: 999px; 
+    background: rgba(255, 255, 255, 0.08); 
+    color: var(--color-text, #ffffff);
+    font-weight: 500;
+  }
 
   .panel-cta {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--color-accent);
+    color: var(--color-accent, #a78bfa);
     text-decoration: none;
-    border-bottom: 1px solid var(--color-accent);
-    padding-bottom: 2px;
-    &:hover { opacity: 0.8; }
+    transition: opacity 0.2s ease;
+
+    span {
+      transition: transform 0.2s ease;
+    }
+
+    &:hover { 
+      opacity: 0.8; 
+      span { transform: translateX(3px); }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .carousel-page {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   @media (max-width: 860px) {
-    .carousel-shell { grid-template-columns: 1fr; }
-    .project-panel { position: static; }
+    .carousel-shell { 
+      grid-template-columns: 1fr; 
+    }
+    .project-panel { 
+      position: static; 
+    }
   }
 
-  @media (max-width: 560px) {
-    .carousel-page { grid-template-columns: 1fr; }
+  @media (max-width: 520px) {
+    .carousel-page { 
+      grid-template-columns: 1fr; 
+    }
   }
 </style>
